@@ -95,12 +95,15 @@ public class UserServices : IUserServices
         user = await _UserRepository.FirstOrDefaultAsync(x => x.Id == id);
 
         // Ищем User в кэше по Email
-        var userInCache = await _CachingServices.GetAsync(user.Email);
-        // User есть в кэше
         if (user != null)
         {
-            // Удаляем User из кеша по Email
-            _CachingServices.RemoveAsync(userInCache.Email);
+            var userInCache = await _CachingServices.GetAsync(user.Email);
+            // User есть в кэше
+            if (userInCache != null)
+            {
+                // Удаляем User из кеша по Email
+                _CachingServices.RemoveAsync(userInCache.Email);
+            }
         }
         // User не найден (404)
         if (user == null)
