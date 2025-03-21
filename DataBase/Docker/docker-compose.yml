@@ -1,12 +1,12 @@
 services:
   db:
-    container_name: postgresTemplate
+    container_name: postgresVoluntaryWorking
     image: postgres
     restart: always
     environment:
       POSTGRES_USER: aragami
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: templatedb
+      POSTGRES_DB: voluntarydb
     ports:
       - "5432:5432"
     networks:
@@ -16,7 +16,7 @@ services:
       - postgres_data:/data/postgres
 
   pgadmin:
-    container_name: pgadmin4Template
+    container_name: pgadmin4VoluntaryWorking
     image: dpage/pgadmin4
     restart: always
     environment:
@@ -30,6 +30,7 @@ services:
     volumes:
        - pgadmin:/var/lib/pgadmin
   redis:
+    container_name: redisVoluntaryWorking
     image: docker.io/bitnami/redis:7.4
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
