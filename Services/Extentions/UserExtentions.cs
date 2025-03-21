@@ -9,7 +9,7 @@ public static class UserExtentions
     public static bool IsValid(this User user)
     {
         if (user.Id < 0 || !user.Email.IsValidEmail() || !user.Password.IsValidPassword() ||
-                user.FirstName == "" || user.SecondName == "")
+                user.Name == "" || user.Group == "")
         {
             return false;
         }
