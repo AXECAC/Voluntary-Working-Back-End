@@ -5,8 +5,8 @@ namespace Context;
 // Класс BaseRepository
 public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
-    private readonly TemplateDbContext Db;
-    public BaseRepository(TemplateDbContext db)
+    private readonly VoluntaryWorkingDbContext Db;
+    public BaseRepository(VoluntaryWorkingDbContext db)
     {
         Db = db;
     }
