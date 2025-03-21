@@ -67,6 +67,10 @@ public class UserServices : IUserServices
     {
         // Хэширование Password
         userEntity = _HashingServices.Hashing(userEntity);
+        userEntity.Role = "Student";
+        userEntity.Points = 0;
+        userEntity.FinishedRequests = 0;
+        userEntity.CurrentRequests = "";
         // Создаем User
         await _UserRepository.Create(userEntity);
         var baseResponse = BaseResponse<bool>.Created("User created");
@@ -96,10 +100,8 @@ public class UserServices : IUserServices
         if (user != null)
         {
             // Удаляем User из кеша по Email
-
             _CachingServices.RemoveAsync(userInCache.Email);
         }
-
         // User не найден (404)
         if (user == null)
         {
@@ -172,8 +174,8 @@ public class UserServices : IUserServices
         // User found
         user.Email = userEntity.Email;
         user.Password = userEntity.Password;
-        user.FirstName = userEntity.FirstName;
-        user.SecondName = userEntity.SecondName;
+        user.Name = userEntity.Name;
+        user.Group = userEntity.Group;
 
         // User edit (201)
         await _UserRepository.Update(user);
