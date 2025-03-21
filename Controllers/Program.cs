@@ -62,7 +62,7 @@ builder.AddRedisClient("redis");
 var connectionString = builder.Configuration.GetConnectionString("Postgres");
 
 // Подключиться к БД
-builder.Services.AddDbContext<TemplateDbContext>(options =>
+builder.Services.AddDbContext<VoluntaryWorkingDbContext>(options =>
         options.UseNpgsql(connectionString), ServiceLifetime.Singleton);
 
 // Добавить Аутентификацию

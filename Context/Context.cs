@@ -3,9 +3,9 @@ using DataBase;
 namespace Context;
 
 // Класс Context
-public class TemplateDbContext : DbContext
+public class VoluntaryWorkingDbContext : DbContext
 {
-    public TemplateDbContext(DbContextOptions<TemplateDbContext> options) : base(options)
+    public VoluntaryWorkingDbContext(DbContextOptions<VoluntaryWorkingDbContext> options) : base(options)
     {
         Database.EnsureCreated();
     }

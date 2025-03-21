@@ -4,8 +4,8 @@ namespace Context;
 // Класс UserRepository
 public class UserRepository : BaseRepository<User>, IUserRepository
 {
-    private readonly TemplateDbContext Db;
-    public UserRepository(TemplateDbContext db) : base(db)
+    private readonly VoluntaryWorkingDbContext Db;
+    public UserRepository(VoluntaryWorkingDbContext db) : base(db)
     {
         Db = db;
     }

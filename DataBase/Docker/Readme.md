@@ -3,27 +3,23 @@
 ```bash
 sudo docker-compose up --no-start
 
-sudo docker start pgadmin4Template
-
-sudo docker start postgresTemplate
+sudo docker start postgresVoluntaryWorking pgadmin4VoluntaryWorking redisVoluntaryWorking
 ```
 
 # Stop docker + postgres
 
 ```bash
-sudo docker stop pgadmin4Template
-
-sudo docker stop postgresTemplate
+sudo docker stop postgresVoluntaryWorking pgadmin4VoluntaryWorking redisVoluntaryWorking
 ```
 
 # Backup db
 
 ```bash
-sudo docker exec postgresTemplate pg_dump -U aragami templatedb > backup.sql
+sudo docker exec postgresVoluntaryWorking pg_dump -U aragami voluntarydb > backup.sql
 ```
 
 # Restore db
 
 ```bash
-sudo docker exec -i postgresTemplate psql -U aragami -d templatedb < backup.sql
+sudo docker exec -i postgresVoluntaryWorking psql -U aragami -d voluntarydb < backup.sql
 ```
