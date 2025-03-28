@@ -36,4 +36,13 @@ public interface IRequestServices
 
     // Получить все Requests по IsFailed == true
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsFailed();
+
+    // Создать Request
+    Task<IBaseResponse<bool>> CreateRequest(Request request);
+
+    // Удалить Request по id
+    Task<IBaseResponse<bool>> DeleteRequest(int id);
+
+    // Изменить Request
+    Task<IBaseResponse<bool>> EditRequest(Request request);
 }
