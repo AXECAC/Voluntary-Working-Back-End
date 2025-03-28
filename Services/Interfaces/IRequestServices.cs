@@ -11,10 +11,10 @@ public interface IRequestServices
     Task<IBaseResponse<Request>> GetRequest(int id);
 
     // Получить Request по NeededPeopleNumber
-    Task<IBaseResponse<Request>> GetRequestByNeededPeopleNumber(int id);
+    Task<IBaseResponse<IEnumerable<Request>>> GetRequestByNeededPeopleNumber(int neededPeopleNumber);
 
     // Получить Request по PointNumber
-    Task<IBaseResponse<Request>> GetRequestByPointNumber(int id);
+    Task<IBaseResponse<IEnumerable<Request>>> GetRequestByPointNumber(int pointNumber);
 
     // Получить все Requests созданные и закрытые админом по его Id
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAdminId(int adminId);
