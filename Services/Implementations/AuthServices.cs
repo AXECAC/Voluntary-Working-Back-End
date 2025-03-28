@@ -33,7 +33,7 @@ public class AuthServices : IAuthServices
             user.Role = "Student";
             user.Points = 0;
             user.FinishedRequests = 0;
-            user.CurrentRequests = "";
+            user.CurrentRequests = [];
             // Создать новый User
             await _UserRepository.Create(user);
             // Created (201)

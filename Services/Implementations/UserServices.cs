@@ -70,7 +70,7 @@ public class UserServices : IUserServices
         userEntity.Role = "Student";
         userEntity.Points = 0;
         userEntity.FinishedRequests = 0;
-        userEntity.CurrentRequests = "";
+        userEntity.CurrentRequests = [];
         // Создаем User
         await _UserRepository.Create(userEntity);
         var baseResponse = BaseResponse<bool>.Created("User created");
