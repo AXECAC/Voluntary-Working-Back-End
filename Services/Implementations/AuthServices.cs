@@ -65,7 +65,7 @@ public class AuthServices : IAuthServices
             if (user.Password == userDb.Password)
             {
                 // Ok (200)
-                baseResponse = BaseResponse<string>.Ok(data: _TokenServices.GenereteJWTToken(user, secretKey));
+                baseResponse = BaseResponse<string>.Ok(data: _TokenServices.GenereteJWTToken(userDb, secretKey));
             }
             else
             {

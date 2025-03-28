@@ -94,6 +94,7 @@ namespace Controllers.UserController
 
         // Create метод
         [HttpPost]
+        [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status409Conflict)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
@@ -120,6 +121,7 @@ namespace Controllers.UserController
 
         // Edit метод
         [HttpPost]
+        [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
@@ -148,6 +150,7 @@ namespace Controllers.UserController
 
         // Delete метод
         [HttpDelete]
+        [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
