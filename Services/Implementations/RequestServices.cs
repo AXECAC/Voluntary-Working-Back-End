@@ -5,8 +5,7 @@ using Services.Caching;
 namespace Services;
 
 // Класс RequestServices
-// public class RequestServices : IRequestServices
-public class RequestServices
+public class RequestServices : IRequestServices
 {
     readonly IRequestRepository _RequestRepository;
     readonly ICachingServices<Request> _CachingServices;
@@ -315,6 +314,46 @@ public class RequestServices
         await _RequestRepository.Delete(request);
         // NoContent (204)
         response = BaseResponse<bool>.NoContent();
+        return response;
+    }
+
+    // Изменить Request
+    public async Task<IBaseResponse<bool>> EditRequest(Request newRequest)
+    {
+        BaseResponse<bool> response;
+        // Ищем в кэше
+        var request = await _CachingServices.GetAsync(newRequest.Id);
+
+        // Нашли в кэше
+        if (request != null)
+        {
+            // Удаляем из кэша
+            _CachingServices.RemoveAsync(newRequest.Id.ToString());
+        }
+
+        request = await _RequestRepository.FirstOrDefaultAsync(x => x.Id == newRequest.Id);
+
+        // Request не найден (404)
+        if (request == null)
+        {
+            response = BaseResponse<bool>.NotFound("Request not found");
+            return response;
+        }
+
+        request.Address = newRequest.Address;
+        request.Date = newRequest.Date;
+        request.DeadLine = newRequest.DeadLine;
+        request.PointNumber = newRequest.PointNumber;
+        request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
+        request.Desctiption = newRequest.Desctiption;
+        request.IsComplited = newRequest.IsComplited;
+        request.IsFailed = newRequest.IsFailed;
+
+        // Добавляем измененного Request
+        _CachingServices.SetAsync(request, request.Id.ToString());
+        await _RequestRepository.Update(request);
+        // NoContent (201)
+        response = BaseResponse<bool>.Created("Request edit");
         return response;
     }
 

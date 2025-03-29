@@ -10,22 +10,22 @@ public interface IRequestServices
     // Получить Request по id
     Task<IBaseResponse<Request>> GetRequest(int id);
 
-    // Получить Request по NeededPeopleNumber
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestByNeededPeopleNumber(int neededPeopleNumber);
+    // Получить Requests по NeededPeopleNumber
+    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber);
 
-    // Получить Request по PointNumber
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestByPointNumber(int pointNumber);
+    // Получить Requests по PointNumber
+    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByPointNumber(int pointNumber);
 
     // Получить все Requests созданные и закрытые админом по его Id
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAdminId(int adminId);
 
     // Получить все Requests по адресу
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsWithAdress(string address);
+    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsWithAddress(string address);
 
     // Получить все Requests по DateTime начала
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTBegin(DateTime dateOfBegin);
 
-    // Получить все Requests доступные на данный момент
+    // Получить все Requests доступные на момент date
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDT(DateTime date);
 
     // Получить все Requests по DateTime дедлайна
