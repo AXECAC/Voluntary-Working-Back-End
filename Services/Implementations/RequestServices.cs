@@ -276,4 +276,17 @@ public class RequestServices
         return response;
     }
 
+    // Создать Request
+    public async Task<IBaseResponse<bool>> CreateRequest(Request request)
+    {
+        // Обнуляем значения
+        request.IsFailed = false;
+        request.IsComplited = false;
+        request.ResponsedPeople = [];
+
+        // Создаем Request
+        var response = BaseResponse<bool>.Created("Request created");
+        return response;
+    }
+
 }
