@@ -230,4 +230,27 @@ public class RequestServices
         return response;
     }
 
+    // Получить все Requests по IsCompleted == true
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsCompleted()
+    {
+        BaseResponse<IEnumerable<Request>> response;
+
+        // Ищем в БД
+        var requests = await _RequestRepository
+            .Where(x => x.IsComplited == true)
+            .ToListAsync();
+
+        // Не нашли в БД
+        // NotFound (404)
+        if (requests == null)
+        {
+            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            return response;
+        }
+
+        // Ok (200)
+        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        return response;
+    }
+
 }
