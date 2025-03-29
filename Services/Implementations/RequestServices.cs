@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using Context;
 using DataBase;
 using Services.Caching;
@@ -65,6 +66,29 @@ public class RequestServices
         _CachingServices.SetAsync(request, request.Id.ToString());
         // Ok (200)
         response = BaseResponse<Request>.Ok(request);
+        return response;
+    }
+
+    // Получить Requests по NeededPeopleNumber
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestByNeededPeopleNumber(int neededPeopleNumber)
+    {
+        BaseResponse<IEnumerable<Request>> response;
+
+        // Ищем в БД
+        var requests = await _RequestRepository
+            .Where(x => x.NeededPeopleNumber == neededPeopleNumber)
+            .ToListAsync();
+
+        // Не нашли в БД
+        // NotFound (404)
+        if (requests == null)
+        {
+            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            return response;
+        }
+
+        // Ok (200)
+        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
         return response;
     }
 }
