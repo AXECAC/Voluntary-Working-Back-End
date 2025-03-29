@@ -59,7 +59,6 @@ public class UserServices : IUserServices
         // Добавляем User в кэш
         _CachingServices.SetAsync(user, user.Id.ToString());
         baseResponse = BaseResponse<User>.Ok(user, "User found");
-        baseResponse.Data = user;
         return baseResponse;
     }
 
