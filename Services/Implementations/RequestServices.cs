@@ -70,7 +70,7 @@ public class RequestServices
     }
 
     // Получить Requests по NeededPeopleNumber
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestByNeededPeopleNumber(int neededPeopleNumber)
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber)
     {
         BaseResponse<IEnumerable<Request>> response;
 
@@ -91,4 +91,28 @@ public class RequestServices
         response = BaseResponse<IEnumerable<Request>>.Ok(requests);
         return response;
     }
+
+    // Получить Requests по PointNumber
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByPointNumber(int pointNumber)
+    {
+        BaseResponse<IEnumerable<Request>> response;
+
+        // Ищем в БД
+        var requests = await _RequestRepository
+            .Where(x => x.PointNumber == pointNumber)
+            .ToListAsync();
+
+        // Не нашли в БД
+        // NotFound (404)
+        if (requests == null)
+        {
+            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            return response;
+        }
+
+        // Ok (200)
+        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        return response;
+    }
+
 }
