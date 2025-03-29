@@ -289,4 +289,33 @@ public class RequestServices
         return response;
     }
 
+    // Удалить Request по id
+    public async Task<IBaseResponse<bool>> DeleteRequest(int id)
+    {
+        BaseResponse<bool> response;
+        // Ищем в кэше
+        var request = await _CachingServices.GetAsync(id);
+
+        // Нашли в кэше
+        if (request != null)
+        {
+            // Удаляем из кэша
+            _CachingServices.RemoveAsync(id.ToString());
+        }
+
+        request = await _RequestRepository.FirstOrDefaultAsync(x => x.Id == id);
+
+        // Request не найден (404)
+        if (request == null)
+        {
+            response = BaseResponse<bool>.NotFound("Request not found");
+            return response;
+        }
+
+        await _RequestRepository.Delete(request);
+        // NoContent (204)
+        response = BaseResponse<bool>.NoContent();
+        return response;
+    }
+
 }
