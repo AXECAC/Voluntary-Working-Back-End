@@ -115,4 +115,27 @@ public class RequestServices
         return response;
     }
 
+    // Получить все Requests созданные и закрытые админом по его Id
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAdminId(int adminId)
+    {
+        BaseResponse<IEnumerable<Request>> response;
+
+        // Ищем в БД
+        var requests = await _RequestRepository
+            .Where(x => x.AdminId == adminId)
+            .ToListAsync();
+
+        // Не нашли в БД
+        // NotFound (404)
+        if (requests == null)
+        {
+            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            return response;
+        }
+
+        // Ok (200)
+        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        return response;
+    }
+
 }
