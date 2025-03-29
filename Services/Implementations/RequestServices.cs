@@ -161,4 +161,27 @@ public class RequestServices
         return response;
     }
 
+    // Получить все Requests по DateTime начала
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTBegin(DateTime dateOfBegin)
+    {
+        BaseResponse<IEnumerable<Request>> response;
+
+        // Ищем в БД
+        var requests = await _RequestRepository
+            .Where(x => x.Date == dateOfBegin)
+            .ToListAsync();
+
+        // Не нашли в БД
+        // NotFound (404)
+        if (requests == null)
+        {
+            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            return response;
+        }
+
+        // Ok (200)
+        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        return response;
+    }
+
 }
