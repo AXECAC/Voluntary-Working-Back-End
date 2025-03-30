@@ -42,5 +42,25 @@ namespace Controllers.AdminRequestController
             return Ok(response.Data);
         }
 
+        // Some Post method
+        [HttpPost]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> CreateRequest(Request request)
+        {
+            // Проверка request на валидность
+            if (!request.IsValid())
+            {
+                return UnprocessableEntity();
+            }
+
+            // Задаем Id админа/Dev-а создавашего это запрос
+            request.AdminId = _AdminUserServices.GetAdminId();
+
+            await _AdminRequestServices.CreateRequest(request);
+
+            // Return response 200
+            return CreatedAtAction(nameof(request), "Successed");
+        }
     }
 }
