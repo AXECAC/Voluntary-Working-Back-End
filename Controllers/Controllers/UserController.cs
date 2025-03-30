@@ -9,6 +9,7 @@ namespace Controllers.UserController
     [Route("api/[controller]/[action]")]
     [Authorize]
     [ApiController]
+    [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status500InternalServerError)]
     // UserController класс контроллер
     public class UserController : Controller
@@ -96,6 +97,7 @@ namespace Controllers.UserController
         [HttpPost]
         [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status403Forbidden)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status409Conflict)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> Create(User userEntity)
@@ -123,6 +125,7 @@ namespace Controllers.UserController
         [HttpPost]
         [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status403Forbidden)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> Edit(User userEntity, string oldEmail)
