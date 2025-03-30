@@ -4,7 +4,7 @@ using DataBase;
 using Services.Caching;
 namespace Services;
 
-// Класс RequestServices
+// Класс AdminRequestServices
 public class AdminRequestServices : IAdminRequestServices
 {
     readonly IRequestRepository _RequestRepository;

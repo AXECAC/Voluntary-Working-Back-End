@@ -8,9 +8,9 @@ namespace Services;
 public class StudentRequestServices : IStudentRequestServices
 {
     readonly IRequestRepository _RequestRepository;
-    readonly ICachingServices<Request> _CachingServices;
+    readonly ICachingServices<PublicRequest> _CachingServices;
 
-    public StudentRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices)
+    public StudentRequestServices(IRequestRepository requestRepository, ICachingServices<PublicRequest> cachingServices)
     {
         _RequestRepository = requestRepository;
         _CachingServices = cachingServices;
