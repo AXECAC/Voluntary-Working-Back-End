@@ -5,12 +5,12 @@ using Services.Caching;
 namespace Services;
 
 // Класс RequestServices
-public class RequestServices : IRequestServices
+public class AdminRequestServices : IAdminRequestServices
 {
     readonly IRequestRepository _RequestRepository;
     readonly ICachingServices<Request> _CachingServices;
 
-    public RequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices)
+    public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices)
     {
         _RequestRepository = requestRepository;
         _CachingServices = cachingServices;
@@ -281,7 +281,7 @@ public class RequestServices : IRequestServices
         // Обнуляем значения
         request.IsFailed = false;
         request.IsComplited = false;
-        request.ResponsedPeople = [];
+        request.RespondedPeople = [];
 
         // Создаем Request
         var response = BaseResponse<bool>.Created("Request created");
@@ -344,6 +344,7 @@ public class RequestServices : IRequestServices
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
         request.PointNumber = newRequest.PointNumber;
+        request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
         request.Desctiption = newRequest.Desctiption;
         request.IsComplited = newRequest.IsComplited;

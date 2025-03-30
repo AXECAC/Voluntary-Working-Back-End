@@ -1,8 +1,8 @@
 using DataBase;
 namespace Services;
 
-// Интерфейс IRequestServices
-public interface IRequestServices
+// Интерфейс IAdminRequestServices
+public interface IAdminRequestServices
 {
     // Получить все Requests
     Task<IBaseResponse<IEnumerable<Request>>> GetRequests();
