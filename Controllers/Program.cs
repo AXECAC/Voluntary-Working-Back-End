@@ -92,13 +92,25 @@ builder.Services.AddSingleton<ExceptionHandlerMiddleware>();
 builder.Services.AddLogging(builder => builder.AddConsole());
 builder.Logging.AddConsole();
 
+builder.Services.AddHttpContextAccessor();
+
 // Добавить наши Services
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IRequestRepository, RequestRepository>();
+
+builder.Services.AddSingleton<IAuthServices, AuthServices>();
 builder.Services.AddSingleton<IUserServices, UserServices>();
+
 builder.Services.AddSingleton<ITokenServices, TokenServices>();
 builder.Services.AddSingleton<IHashingServices, HashingServices>();
 builder.Services.AddSingleton<ICachingServices<User>, CachingServices<User>>();
-builder.Services.AddSingleton<IAuthServices, AuthServices>();
+builder.Services.AddSingleton<ICachingServices<PublicRequest>, CachingServices<PublicRequest>>();
+builder.Services.AddSingleton<ICachingServices<Request>, CachingServices<Request>>();
+
+builder.Services.AddSingleton<IStudentRequestServices, StudentRequestServices>();
+
+builder.Services.AddSingleton<IAdminUserServices, AdminUserServices>();
+builder.Services.AddSingleton<IAdminRequestServices, AdminRequestServices>();
 
 
 var app = builder.Build();
