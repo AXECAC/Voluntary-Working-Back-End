@@ -8,10 +8,10 @@ public static class RequestExtentions
     // Валидация Request
     public static bool IsValid(this Request request)
     {
-        if (request.Id < 0 || request.AdminId < 0 || request.Address != "" ||
-                request.Date.IsValidDate(request.DeadLine) || request.PointNumber.IsValidPointNumber() ||
-                request.NeededPeopleNumber > 0 || request.RespondedPeople.IsValidRespondedPeople() ||
-                request.Desctiption != "")
+        if (request.Id < 0 || request.AdminId < 0 || request.Address == "" ||
+                !request.Date.IsValidDate(request.DeadLine) || !request.PointNumber.IsValidPointNumber() ||
+                request.NeededPeopleNumber < 0 || !request.RespondedPeople.IsValidRespondedPeople() ||
+                request.Desctiption == "")
         {
             return false;
         }
@@ -20,7 +20,7 @@ public static class RequestExtentions
 
     // Валидация полей сущности Request: Date и DeadLine
     private static bool IsValidDate(this DateTime date, DateTime deadLine){
-        if(date != null || deadLine != null || deadLine <= date){
+        if(date == null || deadLine == null || deadLine <= date){
             return false;
         }
         return true;
@@ -36,7 +36,7 @@ public static class RequestExtentions
 
     // Валидация поля сущности Request: RespondedPeople
     private static bool IsValidRespondedPeople(this int[] RespondedPeople){
-        if(RespondedPeople != null){
+        if (RespondedPeople == null){
             return false;
         }
         return true;
