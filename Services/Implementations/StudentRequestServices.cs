@@ -1,4 +1,4 @@
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Context;
 using DataBase;
 using Services.Caching;
@@ -29,7 +29,7 @@ public class StudentRequestServices : IStudentRequestServices
 
         // Если не найдено Request
         // NoContent (204)
-        if (requests.Count != 0)
+        if (requests.Count == 0)
         {
             response = BaseResponse<IEnumerable<PublicRequest>>.NoContent("Find 0 requests");
             return response;

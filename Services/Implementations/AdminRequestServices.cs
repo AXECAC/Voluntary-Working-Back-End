@@ -1,4 +1,4 @@
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Context;
 using DataBase;
 using Services.Caching;
