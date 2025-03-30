@@ -14,6 +14,6 @@ public class AdminUserServices : IAdminUserServices
 
     public int GetAdminId()
     {
-        return Convert.ToInt32((_HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value));
+        return Convert.ToInt32(_HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value);
     }
 }
