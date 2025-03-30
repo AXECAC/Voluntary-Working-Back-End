@@ -26,7 +26,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Если не найдено Request
         // NoContent (204)
-        if (requests.Count != 0)
+        if (requests.Count == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NoContent("Find 0 requests");
             return response;
@@ -282,6 +282,8 @@ public class AdminRequestServices : IAdminRequestServices
         request.IsFailed = false;
         request.IsComplited = false;
         request.RespondedPeople = [];
+
+        await _RequestRepository.Create(request);
 
         // Создаем Request
         var response = BaseResponse<bool>.Created("Request created");
