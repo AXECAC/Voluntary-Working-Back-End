@@ -1,8 +1,8 @@
 using DataBase;
 namespace Services;
 
-// Class PublicRequests
-public class PublicRequests
+// Class PublicRequest
+public class PublicRequest
 {
     public int Id { get; set; }
     public string Address { get; set; }
@@ -14,7 +14,7 @@ public class PublicRequests
     public string Desctiption { get; set; }
     public bool IsComplited { get; set; }
 
-    public PublicRequests(Request request)
+    public PublicRequest(Request request)
     {
         this.Id = request.Id;
         this.Address = request.Address;
