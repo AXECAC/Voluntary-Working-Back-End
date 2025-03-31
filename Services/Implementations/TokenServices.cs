@@ -12,10 +12,9 @@ public class TokenServices : ITokenServices
     {
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Name),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            // На будущее добавить роли
+            new Claim(JwtRegisteredClaimNames.Name, user.Name),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email,  user.Email),
             new Claim(ClaimTypes.Role, user.Role),
         };
 

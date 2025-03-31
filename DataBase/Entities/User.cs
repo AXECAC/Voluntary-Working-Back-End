@@ -11,5 +11,5 @@ public class User
     public string Group { get; set; }
     public int Points { get; set; }
     public int FinishedRequests { get; set; }
-    public string CurrentRequests { get; set; }
+    public int[] CurrentRequests { get; set; }
 }

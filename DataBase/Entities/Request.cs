@@ -10,6 +10,8 @@ public class Request
     public DateTime DeadLine { get; set; }
     public int PointNumber { get; set; }
     public int NeededPeopleNumber { get; set; }
+    public int[] RespondedPeople { get; set; }
     public string Desctiption { get; set; }
     public bool IsComplited { get; set; }
+    public bool IsFailed { get; set; }
 }
