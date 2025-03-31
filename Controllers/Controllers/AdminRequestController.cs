@@ -32,7 +32,7 @@ namespace Controllers.AdminRequestController
         {
             var response = await _AdminRequestServices.GetRequests();
 
-            // Нет запросов
+            // Нет requests
             if (response.StatusCode == DataBase.StatusCodes.NoContent)
             {
                 // Вернуть response (204)
@@ -40,6 +40,32 @@ namespace Controllers.AdminRequestController
             }
             // Вернуть response 200
             return Ok(response.Data);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> GetRequest(int id)
+        {
+            // Id валидация (Плохой ввод)
+            if (id < 1)
+            {
+                // Вернуть StatusCode 422
+                return UnprocessableEntity();
+            }
+            var response = await _AdminRequestServices.GetRequest(id);
+
+            // Есть request
+            if (response.StatusCode == DataBase.StatusCodes.Ok)
+            {
+                // Вернуть response 200
+                return Ok(response.Data);
+            }
+
+            // Нет request
+            // Вернуть response (404)
+            return NotFound();
         }
 
         // Some Post method
