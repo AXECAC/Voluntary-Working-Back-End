@@ -80,7 +80,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -126,7 +126,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -149,7 +149,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -172,7 +172,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -195,7 +195,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -218,7 +218,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -241,7 +241,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -264,7 +264,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
