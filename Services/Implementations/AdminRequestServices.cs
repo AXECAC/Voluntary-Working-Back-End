@@ -279,6 +279,7 @@ public class AdminRequestServices : IAdminRequestServices
     public async Task<IBaseResponse<bool>> CreateRequest(Request request)
     {
         // Обнуляем значения
+        request.Id = 0;
         request.IsFailed = false;
         request.IsComplited = false;
         request.RespondedPeople = [];
