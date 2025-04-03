@@ -128,9 +128,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsWithAddress(string address)
+        public async Task<IActionResult> GetRequestsByAddress(string address)
         {
-            var response = await _AdminRequestServices.GetRequestsWithAddress(address);
+            var response = await _AdminRequestServices.GetRequestsByAddress(address);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)

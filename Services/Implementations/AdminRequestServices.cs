@@ -138,7 +138,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests по адресу
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsWithAddress(string address)
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAddress(string address)
     {
         BaseResponse<IEnumerable<Request>> response;
 
