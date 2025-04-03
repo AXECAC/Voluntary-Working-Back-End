@@ -190,7 +190,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Ищем в БД
         var requests = await _RequestRepository
-            .Where(x => x.Date >= date)
+            .Where(x => x.Date <= date && date < x.DeadLine)
             .ToListAsync();
 
         // Не нашли в БД

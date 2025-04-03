@@ -163,6 +163,25 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
+        [HttpGet]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetRequestsDT(DateTime dateOfBegin)
+        {
+            var response = await _AdminRequestServices.GetRequestsDT(dateOfBegin);
+
+            // Есть requests
+            if (response.StatusCode == DataBase.StatusCodes.Ok)
+            {
+                // Вернуть response 200
+                return Ok(response.Data);
+            }
+
+            // Нет requests
+            // Вернуть response (404)
+            return NotFound();
+        }
+
         // Some Post method
         [HttpPost]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
