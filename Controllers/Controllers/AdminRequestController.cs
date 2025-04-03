@@ -70,10 +70,29 @@ namespace Controllers.AdminRequestController
 
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
-        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetRequestsByAdminId(int id)
         {
             var response = await _AdminRequestServices.GetRequestsByAdminId(id);
+
+            // Есть requests
+            if (response.StatusCode == DataBase.StatusCodes.Ok)
+            {
+                // Вернуть response 200
+                return Ok(response.Data);
+            }
+
+            // Нет requests
+            // Вернуть response (404)
+            return NotFound();
+        }
+
+        [HttpGet]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetRequestsByPointNumber(int pointNumber)
+        {
+            var response = await _AdminRequestServices.GetRequestsByPointNumber(pointNumber);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
