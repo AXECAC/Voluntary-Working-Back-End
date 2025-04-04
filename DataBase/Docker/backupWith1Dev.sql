@@ -60,7 +60,7 @@ CREATE TABLE public."Requests" (
     "PointNumber" integer NOT NULL,
     "NeededPeopleNumber" integer NOT NULL,
     "RespondedPeople" integer[] NOT NULL,
-    "Desctiption" text NOT NULL,
+    "Description" text NOT NULL,
     "IsComplited" boolean NOT NULL,
     "IsFailed" boolean NOT NULL
 );
@@ -127,7 +127,7 @@ COPY public."Images" ("Id", "Value") FROM stdin;
 -- Data for Name: Requests; Type: TABLE DATA; Schema: public; Owner: aragami
 --
 
-COPY public."Requests" ("Id", "AdminId", "Address", "Date", "DeadLine", "PointNumber", "NeededPeopleNumber", "RespondedPeople", "Desctiption", "IsComplited", "IsFailed") FROM stdin;
+COPY public."Requests" ("Id", "AdminId", "Address", "Date", "DeadLine", "PointNumber", "NeededPeopleNumber", "RespondedPeople", "Description", "IsComplited", "IsFailed") FROM stdin;
 \.
 
 

@@ -11,7 +11,7 @@ public static class RequestExtentions
         if (request.Id < 0 || request.AdminId < 0 || request.Address == "" ||
                 !request.Date.IsValidDate(request.DeadLine) || !request.PointNumber.IsValidPointNumber() ||
                 request.NeededPeopleNumber < 0 || !request.RespondedPeople.IsValidRespondedPeople() ||
-                request.Desctiption == "")
+                request.Description == "")
         {
             return false;
         }
