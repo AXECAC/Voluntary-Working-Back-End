@@ -262,6 +262,7 @@ namespace Controllers.AdminRequestController
 
         [HttpPut]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> EditRequest(Request request)
         {
@@ -285,6 +286,31 @@ namespace Controllers.AdminRequestController
             }
 
             // Нет такого запроса
+            // Вернуть response (404)
+            return NotFound();
+        }
+        [HttpDelete]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> DeleteRequest(int id)
+        {
+            // Id валидация (Плохой ввод)
+            if (id < 1)
+            {
+                // Вернуть StatusCode 422
+                return UnprocessableEntity();
+            }
+            var response = await _AdminRequestServices.DeleteRequest(id);
+
+            // Есть request
+            if (response.StatusCode == DataBase.StatusCodes.NoContent)
+            {
+                // Вернуть response 204
+                return NoContent();
+            }
+
+            // Нет request
             // Вернуть response (404)
             return NotFound();
         }
