@@ -343,6 +343,7 @@ public class AdminRequestServices : IAdminRequestServices
             return response;
         }
 
+        request.AdminId = request.AdminId;
         request.Address = newRequest.Address;
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
@@ -350,7 +351,6 @@ public class AdminRequestServices : IAdminRequestServices
         request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
         request.Description = newRequest.Description;
-        request.IsComplited = newRequest.IsComplited;
         request.IsFailed = newRequest.IsFailed;
 
         // Добавляем измененного Request
