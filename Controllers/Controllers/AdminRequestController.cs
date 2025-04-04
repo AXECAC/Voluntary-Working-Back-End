@@ -220,6 +220,25 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
+        [HttpGet]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetRequestsFailed()
+        {
+            var response = await _AdminRequestServices.GetRequestsFailed();
+
+            // Есть requests
+            if (response.StatusCode == DataBase.StatusCodes.Ok)
+            {
+                // Вернуть response 200
+                return Ok(response.Data);
+            }
+
+            // Нет requests
+            // Вернуть response (404)
+            return NotFound();
+        }
+
         [HttpPost]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
