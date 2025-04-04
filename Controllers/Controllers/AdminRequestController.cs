@@ -253,10 +253,40 @@ namespace Controllers.AdminRequestController
             // Задаем Id админа/Dev-а создавашего это запрос
             request.AdminId = _AdminUserServices.GetAdminId();
 
+            // Создаем Request
             await _AdminRequestServices.CreateRequest(request);
 
             // Return response 200
             return CreatedAtAction(nameof(request), "Successed");
+        }
+
+        [HttpPut]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> EditRequest(Request request)
+        {
+            // Проверка request на валидность
+            if (!request.IsValid())
+            {
+                return UnprocessableEntity();
+            }
+
+            // Задаем Id админа/Dev-а изменившего это запрос
+            request.AdminId = _AdminUserServices.GetAdminId();
+
+            // Меняем Request
+            var response = await _AdminRequestServices.EditRequest(request);
+
+            // Получилось изменить
+            if (response.StatusCode == DataBase.StatusCodes.Created)
+            {
+                // Вернуть response 200
+                return CreatedAtAction(nameof(request), "Successed");
+            }
+
+            // Нет такого запроса
+            // Вернуть response (404)
+            return NotFound();
         }
     }
 }
