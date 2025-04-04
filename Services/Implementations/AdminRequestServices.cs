@@ -349,7 +349,7 @@ public class AdminRequestServices : IAdminRequestServices
         request.PointNumber = newRequest.PointNumber;
         request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
-        request.Desctiption = newRequest.Desctiption;
+        request.Description = newRequest.Description;
         request.IsComplited = newRequest.IsComplited;
         request.IsFailed = newRequest.IsFailed;
 

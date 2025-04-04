@@ -11,7 +11,7 @@ public class PublicRequest
     public int PointNumber { get; set; }
     public int NeededPeopleNumber { get; set; }
     public int RespondedPeople { get; set; }
-    public string Desctiption { get; set; }
+    public string Description { get; set; }
     public bool IsComplited { get; set; }
 
     public PublicRequest(Request request)
@@ -23,7 +23,7 @@ public class PublicRequest
         this.PointNumber = request.PointNumber;
         this.NeededPeopleNumber = request.NeededPeopleNumber;
         this.RespondedPeople = request.RespondedPeople.Count();
-        this.Desctiption = request.Desctiption;
+        this.Description = request.Description;
         this.IsComplited = request.IsComplited;
     }
 }

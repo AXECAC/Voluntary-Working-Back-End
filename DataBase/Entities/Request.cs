@@ -11,7 +11,7 @@ public class Request
     public int PointNumber { get; set; }
     public int NeededPeopleNumber { get; set; }
     public int[] RespondedPeople { get; set; }
-    public string Desctiption { get; set; }
+    public string Description { get; set; }
     public bool IsComplited { get; set; }
     public bool IsFailed { get; set; }
 }
