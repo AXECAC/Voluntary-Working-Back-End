@@ -20,7 +20,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAdminId(int adminId);
 
     // Получить все Requests по адресу
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsWithAddress(string address);
+    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAddress(string address);
 
     // Получить все Requests по DateTime начала
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTBegin(DateTime dateOfBegin);

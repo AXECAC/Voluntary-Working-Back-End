@@ -80,7 +80,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -126,7 +126,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -138,7 +138,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests по адресу
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsWithAddress(string address)
+    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAddress(string address)
     {
         BaseResponse<IEnumerable<Request>> response;
 
@@ -149,7 +149,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -172,7 +172,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -190,12 +190,12 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Ищем в БД
         var requests = await _RequestRepository
-            .Where(x => x.Date >= date)
+            .Where(x => x.Date <= date && date < x.DeadLine)
             .ToListAsync();
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -218,7 +218,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -241,7 +241,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -264,7 +264,7 @@ public class AdminRequestServices : IAdminRequestServices
 
         // Не нашли в БД
         // NotFound (404)
-        if (requests == null)
+        if (requests == null || requests.Count() == 0)
         {
             response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
             return response;
@@ -279,6 +279,7 @@ public class AdminRequestServices : IAdminRequestServices
     public async Task<IBaseResponse<bool>> CreateRequest(Request request)
     {
         // Обнуляем значения
+        request.Id = 0;
         request.IsFailed = false;
         request.IsComplited = false;
         request.RespondedPeople = [];
@@ -342,14 +343,14 @@ public class AdminRequestServices : IAdminRequestServices
             return response;
         }
 
+        request.AdminId = request.AdminId;
         request.Address = newRequest.Address;
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
         request.PointNumber = newRequest.PointNumber;
         request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
-        request.Desctiption = newRequest.Desctiption;
-        request.IsComplited = newRequest.IsComplited;
+        request.Description = newRequest.Description;
         request.IsFailed = newRequest.IsFailed;
 
         // Добавляем измененного Request
