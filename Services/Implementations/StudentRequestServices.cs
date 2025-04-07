@@ -40,4 +40,35 @@ public class StudentRequestServices : IStudentRequestServices
 
         return response;
     }
+
+    // Добавить Id студента в откликнувшихся на запрос
+    public async Task<IBaseResponse> AssigneeMe(int requestId)
+    {
+        BaseResponse response;
+
+        // Ищем запрос в БД
+        var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
+
+        // Если запроса нет
+        if (request == null)
+        {
+            // NotFound (404)
+            response = BaseResponse.NotFound("Request not found");
+            return response;
+        }
+
+        // Нашли запрос
+
+        if (request.RespondedPeople.Count() < request.NeededPeopleNumber){
+            request.RespondedPeople.Append(requestId);
+            // NoContent (204)
+            response = BaseResponse.NoContent("Successed");
+            return response;
+        }
+
+        // BadRequest (400)
+        response = BaseResponse.BadRequest("Successed");
+        return response;
+
+    }
 }
