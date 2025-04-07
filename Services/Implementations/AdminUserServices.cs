@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Context;
 using DataBase;
 using Services.Caching;
@@ -10,14 +9,12 @@ public class AdminUserServices : IAdminUserServices
     private readonly IUserRepository _UserRepository;
     private readonly IHashingServices _HashingServices;
     private readonly ICachingServices<User> _CachingServices;
-    private readonly IHttpContextAccessor _HttpContextAccessor;
 
-    public AdminUserServices(IUserRepository userRepository, IHashingServices hashingServices, ICachingServices<User> cachingServices, IHttpContextAccessor httpContextAccessor)
+    public AdminUserServices(IUserRepository userRepository, IHashingServices hashingServices, ICachingServices<User> cachingServices)
     {
         _UserRepository = userRepository;
         _HashingServices = hashingServices;
         _CachingServices = cachingServices;
-        _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
     public async Task<IBaseResponse<IEnumerable<User>>> GetUsers()
