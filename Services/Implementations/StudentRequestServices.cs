@@ -7,13 +7,15 @@ namespace Services;
 // Класс StudentRequestServices
 public class StudentRequestServices : IStudentRequestServices
 {
-    readonly IRequestRepository _RequestRepository;
-    readonly ICachingServices<PublicRequest> _CachingServices;
+    private readonly IRequestRepository _RequestRepository;
+    private readonly ICachingServices<PublicRequest> _CachingServices;
+    private readonly IUserServices _UserServices;
 
-    public StudentRequestServices(IRequestRepository requestRepository, ICachingServices<PublicRequest> cachingServices)
+    public StudentRequestServices(IRequestRepository requestRepository, ICachingServices<PublicRequest> cachingServices, IUserServices userServices)
     {
         _RequestRepository = requestRepository;
         _CachingServices = cachingServices;
+        _UserServices = userServices;
     }
 
     // Получить все Requests
@@ -58,9 +60,12 @@ public class StudentRequestServices : IStudentRequestServices
         }
 
         // Нашли запрос
-
-        if (request.RespondedPeople.Count() < request.NeededPeopleNumber){
-            request.RespondedPeople.Append(requestId);
+        if (request.RespondedPeople.Count() < request.NeededPeopleNumber)
+        {
+            // Добавляем студента к Request
+            request.RespondedPeople.Append(
+                    _UserServices.GetMyId() // Получаем Id откликнувшегося студента
+                    );
             // NoContent (204)
             response = BaseResponse.NoContent("Successed");
             return response;
