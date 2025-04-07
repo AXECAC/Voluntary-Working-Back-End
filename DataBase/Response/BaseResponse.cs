@@ -62,6 +62,16 @@ public class BaseResponse<T> : IBaseResponse<T>
     }
 
     // Генерация Unauthorized response (401)
+    public static BaseResponse<T> BadRequest(string description = "")
+    {
+        return new BaseResponse<T>()
+        {
+            StatusCode = StatusCodes.BadRequest,
+            Description = description,
+        };
+    }
+
+    // Генерация Unauthorized response (401)
     public static BaseResponse<T> Unauthorized(string description = "")
     {
         return new BaseResponse<T>()
@@ -136,6 +146,16 @@ public class BaseResponse : IBaseResponse
         return new BaseResponse()
         {
             StatusCode = StatusCodes.NoContent,
+            Description = description,
+        };
+    }
+
+    // Генерация Unauthorized response (401)
+    public static BaseResponse BadRequest(string description = "")
+    {
+        return new BaseResponse()
+        {
+            StatusCode = StatusCodes.BadRequest,
             Description = description,
         };
     }

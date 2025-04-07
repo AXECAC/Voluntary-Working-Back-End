@@ -4,7 +4,7 @@ using Services;
 using DataBase;
 using Extentions;
 
-namespace Controllers.UserController
+namespace Controllers.AdminUserController
 {
     [Route("api/[controller]/[action]")]
     [Authorize]
@@ -12,13 +12,13 @@ namespace Controllers.UserController
     [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status500InternalServerError)]
     // UserController класс контроллер
-    public class UserController : Controller
+    public class AdminUserController : Controller
     {
-        private readonly IUserServices _UserServices;
+        private readonly IAdminUserServices _AdminUserServices;
 
-        public UserController(IUserServices userServices)
+        public AdminUserController(IAdminUserServices adminUserServices)
         {
-            _UserServices = userServices;
+            _AdminUserServices = adminUserServices;
         }
 
         // GetUsers метод
@@ -27,7 +27,7 @@ namespace Controllers.UserController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetUsers()
         {
-            var response = await _UserServices.GetUsers();
+            var response = await _AdminUserServices.GetUsers();
 
             // Найдены некоторые Users
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -53,7 +53,7 @@ namespace Controllers.UserController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _UserServices.GetUser(id);
+            var response = await _AdminUserServices.GetUser(id);
 
             // User found
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -80,7 +80,7 @@ namespace Controllers.UserController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _UserServices.GetUserByEmail(email);
+            var response = await _AdminUserServices.GetUserByEmail(email);
 
             // User найден
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -109,14 +109,14 @@ namespace Controllers.UserController
                 return UnprocessableEntity();
             }
             // Проверить существование "new email"
-            var response = await _UserServices.GetUserByEmail(userEntity.Email);
+            var response = await _AdminUserServices.GetUserByEmail(userEntity.Email);
             // Conflict: Этот email уже существует
             if (response.StatusCode == DataBase.StatusCodes.Ok)
             {
                 return Conflict();
             }
             // Создать User
-            await _UserServices.CreateUser(userEntity);
+            await _AdminUserServices.CreateUser(userEntity);
             // Вернуть response 201
             return CreatedAtAction(nameof(userEntity), new { message = "Successed" });
         }
@@ -138,7 +138,7 @@ namespace Controllers.UserController
             }
 
             // Проверить oldEmail существует
-            var response = await _UserServices.GetUserByEmail(oldEmail);
+            var response = await _AdminUserServices.GetUserByEmail(oldEmail);
             // NotFound: Edit user не найден
             if (response.StatusCode == DataBase.StatusCodes.NotFound)
             {
@@ -146,7 +146,7 @@ namespace Controllers.UserController
             }
 
             // Изменить User
-            await _UserServices.Edit(oldEmail, userEntity);
+            await _AdminUserServices.Edit(oldEmail, userEntity);
             // Вернуть response 201
             return CreatedAtAction(nameof(userEntity), new { message = "Successed" });
         }
@@ -165,7 +165,7 @@ namespace Controllers.UserController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _UserServices.DeleteUser(id);
+            var response = await _AdminUserServices.DeleteUser(id);
 
             // User удален
             if (response.StatusCode == DataBase.StatusCodes.NoContent)

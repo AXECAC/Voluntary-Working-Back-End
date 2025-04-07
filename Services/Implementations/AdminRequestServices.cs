@@ -7,8 +7,8 @@ namespace Services;
 // Класс AdminRequestServices
 public class AdminRequestServices : IAdminRequestServices
 {
-    readonly IRequestRepository _RequestRepository;
-    readonly ICachingServices<Request> _CachingServices;
+    private readonly IRequestRepository _RequestRepository;
+    private readonly ICachingServices<Request> _CachingServices;
 
     public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices)
     {
