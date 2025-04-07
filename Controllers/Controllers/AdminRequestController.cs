@@ -15,12 +15,12 @@ namespace Controllers.AdminRequestController
     // AdminRequestController класс контроллер
     public class AdminRequestController : Controller
     {
-        private readonly IAdminUserServices _AdminUserServices;
+        private readonly IUserServices _UserServices;
         private readonly IAdminRequestServices _AdminRequestServices;
 
-        public AdminRequestController(IAdminUserServices adminUserServices, IAdminRequestServices adminRequestServices)
+        public AdminRequestController(IUserServices userServices, IAdminRequestServices adminRequestServices)
         {
-            _AdminUserServices = adminUserServices;
+            _UserServices = userServices;
             _AdminRequestServices = adminRequestServices;
         }
 
@@ -251,7 +251,7 @@ namespace Controllers.AdminRequestController
             }
 
             // Задаем Id админа/Dev-а создавашего это запрос
-            request.AdminId = _AdminUserServices.GetAdminId();
+            request.AdminId = _UserServices.GetMyId();
 
             // Создаем Request
             await _AdminRequestServices.CreateRequest(request);
@@ -273,7 +273,7 @@ namespace Controllers.AdminRequestController
             }
 
             // Задаем Id админа/Dev-а изменившего это запрос
-            request.AdminId = _AdminUserServices.GetAdminId();
+            request.AdminId = _UserServices.GetMyId();
 
             // Меняем Request
             var response = await _AdminRequestServices.EditRequest(request);
