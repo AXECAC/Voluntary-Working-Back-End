@@ -38,11 +38,11 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsFailed();
 
     // Создать Request
-    Task<IBaseResponse<bool>> CreateRequest(Request request);
+    Task<IBaseResponse> CreateRequest(Request request);
 
     // Удалить Request по id
-    Task<IBaseResponse<bool>> DeleteRequest(int id);
+    Task<IBaseResponse> DeleteRequest(int id);
 
     // Изменить Request
-    Task<IBaseResponse<bool>> EditRequest(Request request);
+    Task<IBaseResponse> EditRequest(Request request);
 }
