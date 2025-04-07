@@ -276,7 +276,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Создать Request
-    public async Task<IBaseResponse<bool>> CreateRequest(Request request)
+    public async Task<IBaseResponse> CreateRequest(Request request)
     {
         // Обнуляем значения
         request.Id = 0;
@@ -287,14 +287,14 @@ public class AdminRequestServices : IAdminRequestServices
         await _RequestRepository.Create(request);
 
         // Создаем Request
-        var response = BaseResponse<bool>.Created("Request created");
+        var response = BaseResponse.Created("Request created");
         return response;
     }
 
     // Удалить Request по id
-    public async Task<IBaseResponse<bool>> DeleteRequest(int id)
+    public async Task<IBaseResponse> DeleteRequest(int id)
     {
-        BaseResponse<bool> response;
+        BaseResponse response;
         // Ищем в кэше
         var request = await _CachingServices.GetAsync(id);
 
@@ -310,20 +310,20 @@ public class AdminRequestServices : IAdminRequestServices
         // Request не найден (404)
         if (request == null)
         {
-            response = BaseResponse<bool>.NotFound("Request not found");
+            response = BaseResponse.NotFound("Request not found");
             return response;
         }
 
         await _RequestRepository.Delete(request);
         // NoContent (204)
-        response = BaseResponse<bool>.NoContent();
+        response = BaseResponse.NoContent();
         return response;
     }
 
     // Изменить Request
-    public async Task<IBaseResponse<bool>> EditRequest(Request newRequest)
+    public async Task<IBaseResponse> EditRequest(Request newRequest)
     {
-        BaseResponse<bool> response;
+        BaseResponse response;
         // Ищем в кэше
         var request = await _CachingServices.GetAsync(newRequest.Id);
 
@@ -339,7 +339,7 @@ public class AdminRequestServices : IAdminRequestServices
         // Request не найден (404)
         if (request == null)
         {
-            response = BaseResponse<bool>.NotFound("Request not found");
+            response = BaseResponse.NotFound("Request not found");
             return response;
         }
 
@@ -357,7 +357,7 @@ public class AdminRequestServices : IAdminRequestServices
         _CachingServices.SetAsync(request, request.Id.ToString());
         await _RequestRepository.Update(request);
         // NoContent (201)
-        response = BaseResponse<bool>.Created("Request edit");
+        response = BaseResponse.Created("Request edit");
         return response;
     }
 
