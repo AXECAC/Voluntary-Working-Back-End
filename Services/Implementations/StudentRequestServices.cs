@@ -26,11 +26,27 @@ public class StudentRequestServices : IStudentRequestServices
     {
         BaseResponse<IEnumerable<PublicRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .GetQueryable()
-            .Select(request => new PublicRequest(request))
-            .ToListAsync();
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PublicRequest> requests;
+
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Select(request => new PublicRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Select(request => new PublicRequest(request))
+                .ToListAsync();
+        }
 
         // Если не найдено Request
         // NoContent (204)
@@ -54,6 +70,7 @@ public class StudentRequestServices : IStudentRequestServices
         // Ищем запрос в БД
         var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
 
+        // Ищем откликнувшихся на запрос
         var respondedPeople = await _RespondedPeopleRepository
             .Where(rp => rp.RequestId == requestId)
             .ToListAsync();
@@ -86,8 +103,7 @@ public class StudentRequestServices : IStudentRequestServices
         }
 
         // BadRequest (400)
-        response = BaseResponse.BadRequest("");
+        response = BaseResponse.BadRequest("No more places");
         return response;
-
     }
 }
