@@ -150,7 +150,7 @@ public class BaseResponse : IBaseResponse
         };
     }
 
-    // Генерация Unauthorized response (401)
+    // Генерация Unauthorized response (400)
     public static BaseResponse BadRequest(string description = "")
     {
         return new BaseResponse()
