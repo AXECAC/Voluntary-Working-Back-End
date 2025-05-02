@@ -89,6 +89,14 @@ public class StudentRequestServices : IStudentRequestServices
             // Получаем Id откликнувшегося студента
             int myId = _UserServices.GetMyId();
 
+            // Если студент уже откликался
+            if (respondedPeople.Where(rp => rp.UserId == myId).Count() > 0)
+            {
+                // BadRequest (400)
+                response = BaseResponse.BadRequest("Already added");
+                return response;
+            }
+
             // Создаем новый RespondedPeople
             RespondedPeople newRP = new RespondedPeople();
 
