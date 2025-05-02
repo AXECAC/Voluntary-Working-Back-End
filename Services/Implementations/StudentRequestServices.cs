@@ -114,4 +114,47 @@ public class StudentRequestServices : IStudentRequestServices
         response = BaseResponse.BadRequest("No more places");
         return response;
     }
+
+    public async Task<IBaseResponse> UnassigneeMe(int requestId)
+    {
+        BaseResponse response;
+
+        // Ищем запрос в БД
+        var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
+
+        // Ищем откликнувшихся на запрос
+        var respondedPeople = await _RespondedPeopleRepository
+            .Where(rp => rp.RequestId == requestId)
+            .ToListAsync();
+
+        // Если запроса нет
+        if (request == null)
+        {
+            // NotFound (404)
+            response = BaseResponse.NotFound("Request not found");
+            return response;
+        }
+
+        // Нашли запрос
+        // Получаем Id откликнувшегося студента
+        int myId = _UserServices.GetMyId();
+
+        // Ищем отклик студента
+        RespondedPeople deleteRP = respondedPeople
+            .FirstOrDefault(rp => (rp.UserId == myId && rp.RequestId == request.Id));
+
+        // Если студент уже откликался
+        if (deleteRP != null)
+        {
+            // Удаляем студента из RespondedPeople
+            await _RespondedPeopleRepository.Delete(deleteRP);
+            // NoContent (204)
+            response = BaseResponse.NoContent("Successed");
+            return response;
+        }
+
+        // BadRequest (400)
+        response = BaseResponse.BadRequest("Was not assigned");
+        return response;
+    }
 }
