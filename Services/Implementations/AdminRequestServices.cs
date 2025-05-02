@@ -282,7 +282,6 @@ public class AdminRequestServices : IAdminRequestServices
         request.Id = 0;
         request.IsFailed = false;
         request.IsComplited = false;
-        // request.RespondedPeople.Clear();
 
         await _RequestRepository.Create(request);
 

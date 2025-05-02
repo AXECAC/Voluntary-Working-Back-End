@@ -8,12 +8,15 @@ namespace Services;
 public class StudentRequestServices : IStudentRequestServices
 {
     private readonly IRequestRepository _RequestRepository;
+    private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly ICachingServices<PublicRequest> _CachingServices;
     private readonly IUserServices _UserServices;
 
-    public StudentRequestServices(IRequestRepository requestRepository, ICachingServices<PublicRequest> cachingServices, IUserServices userServices)
+    public StudentRequestServices(IRequestRepository requestRepository, ICachingServices<PublicRequest> cachingServices,
+            IUserServices userServices, IRespondedPeopleRepository respondedPeopleRepository)
     {
         _RequestRepository = requestRepository;
+        _RespondedPeopleRepository = respondedPeopleRepository;
         _CachingServices = cachingServices;
         _UserServices = userServices;
     }
@@ -51,6 +54,10 @@ public class StudentRequestServices : IStudentRequestServices
         // Ищем запрос в БД
         var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
 
+        var respondedPeople = await _RespondedPeopleRepository
+            .Where(rp => rp.RequestId == requestId)
+            .ToListAsync();
+
         // Если запроса нет
         if (request == null)
         {
@@ -60,18 +67,23 @@ public class StudentRequestServices : IStudentRequestServices
         }
 
         // Нашли запрос
-        // if (request.RespondedPeople.Count() < request.NeededPeopleNumber)
-        // {
-        //     // Получаем Id откликнувшегося студента
-        //     int myId = _UserServices.GetMyId();
-        //     // Добавляем студента к Request
-        //     request.RespondedPeople.Add(myId);
-        //     // Обновляем запрос в БД
-        //     await _RequestRepository.Update(request);
-        //     // NoContent (204)
-        //     response = BaseResponse.NoContent("Successed");
-        //     return response;
-        // }
+        if (respondedPeople.Count < request.NeededPeopleNumber)
+        {
+            // Получаем Id откликнувшегося студента
+            int myId = _UserServices.GetMyId();
+
+            // Создаем новый RespondedPeople
+            RespondedPeople newRP = new RespondedPeople();
+
+            newRP.RequestId = requestId;
+            newRP.UserId = myId;
+
+            // Добавляем студента к RespondedPeople
+            await _RespondedPeopleRepository.Create(newRP);
+            // NoContent (204)
+            response = BaseResponse.NoContent("Successed");
+            return response;
+        }
 
         // BadRequest (400)
         response = BaseResponse.BadRequest("");
