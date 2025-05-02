@@ -28,4 +28,21 @@ public class PrivateRequest
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
     }
+
+    // Устанавливаем UserId откликнувшихся User
+    public void SetRespondedPeople(List<RespondedPeople> respondedPeople)
+    {
+        // Обнуляем
+        this.RespondedPeople = new List<int>();
+        // Считаем
+        for (int i = 0; i < respondedPeople.Count; ++i)
+        {
+            // Если Id PublicRequest и RequestId совпадают
+            if (this.Id == respondedPeople[i].RequestId)
+            {
+                // Добавляем UserId
+                this.RespondedPeople.Add(respondedPeople[i].UserId);
+            }
+        }
+    }
 }
