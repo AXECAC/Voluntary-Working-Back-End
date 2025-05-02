@@ -97,6 +97,7 @@ builder.Services.AddHttpContextAccessor();
 // Добавить наши Services
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IRequestRepository, RequestRepository>();
+builder.Services.AddSingleton<IRespondedPeopleRepository, RespondedPeopleRepository>();
 
 builder.Services.AddSingleton<IAuthServices, AuthServices>();
 builder.Services.AddSingleton<IUserServices, UserServices>();
