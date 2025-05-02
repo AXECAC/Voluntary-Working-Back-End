@@ -29,6 +29,19 @@ public class PrivateRequest
         this.IsComplited = request.IsComplited;
     }
 
+    public PrivateRequest(Request request, List<RespondedPeople> respondedPeople)
+    {
+        this.Id = request.Id;
+        this.Address = request.Address;
+        this.Date = request.Date;
+        this.DeadLine = request.DeadLine;
+        this.PointNumber = request.PointNumber;
+        this.NeededPeopleNumber = request.NeededPeopleNumber;
+        this.SetRespondedPeople(respondedPeople); // Устанавливаем UserId откликнувшихся User
+        this.Description = request.Description;
+        this.IsComplited = request.IsComplited;
+    }
+
     // Устанавливаем UserId откликнувшихся User
     public void SetRespondedPeople(List<RespondedPeople> respondedPeople)
     {
