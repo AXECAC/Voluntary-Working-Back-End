@@ -21,7 +21,7 @@ public class AdminUserServices : IAdminUserServices
     {
         BaseResponse<IEnumerable<User>> baseResponse;
         // Ищем всех User в БД
-        var users = await _UserRepository.Select();
+        var users = await _UserRepository.GetAll();
 
         // in future try !users.Any()
         // Ok (204) but 0 elements

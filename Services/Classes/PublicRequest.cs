@@ -22,7 +22,7 @@ public class PublicRequest
         this.DeadLine = request.DeadLine;
         this.PointNumber = request.PointNumber;
         this.NeededPeopleNumber = request.NeededPeopleNumber;
-        this.RespondedPeople = 0;
+        this.RespondedPeople = 0; // Обнуляем количество откликнувших
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
     }

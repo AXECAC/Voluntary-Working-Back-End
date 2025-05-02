@@ -22,7 +22,7 @@ public class AdminRequestServices : IAdminRequestServices
         BaseResponse<IEnumerable<Request>> response;
 
         // Ищем в БД
-        var requests = await _RequestRepository.Select();
+        var requests = await _RequestRepository.GetAll();
 
         // Если не найдено Request
         // NoContent (204)

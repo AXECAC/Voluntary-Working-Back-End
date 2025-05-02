@@ -8,7 +8,7 @@ public interface IBaseRepository<T>
     Task<bool> Create(T entity);
 
     // Получить сущности из Db
-    Task<List<T>>? Select();
+    Task<List<T>>? GetAll();
 
     // Удалить сущность из Db
     Task<bool> Delete(T entity);
