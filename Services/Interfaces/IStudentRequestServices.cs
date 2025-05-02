@@ -9,4 +9,7 @@ public interface IStudentRequestServices
 
     // Добавить Id студента в откликнувшихся на запрос
     Task<IBaseResponse> AssigneeMe(int request);
+
+    // Удалить Id студента из откликнувшихся на запрос
+    Task<IBaseResponse> UnassigneeMe(int request);
 }
