@@ -37,11 +37,39 @@ namespace Controllers.StudentRequestController
         public async Task<IActionResult> AssigneeMe(int requestId)
         {
             // Если requestId < 1 => не валидный Id
-            if (requestId < 1){
+            if (requestId < 1)
+            {
                 // Вернуть response (422)
                 return UnprocessableEntity();
             }
             var response = await _StudentRequestServices.AssigneeMe(requestId);
+
+            // Нет запросов
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+            if (response.StatusCode == DataBase.StatusCodes.BadRequest)
+            {
+                // Вернуть response (400)
+                return BadRequest();
+            }
+
+            // Вернуть response 204
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> UnassigneeMe(int requestId)
+        {
+            // Если requestId < 1 => не валидный Id
+            if (requestId < 1)
+            {
+                // Вернуть response (422)
+                return UnprocessableEntity();
+            }
+            var response = await _StudentRequestServices.UnassigneeMe(requestId);
 
             // Нет запросов
             if (response.StatusCode == DataBase.StatusCodes.NotFound)
