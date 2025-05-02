@@ -60,19 +60,21 @@ public class StudentRequestServices : IStudentRequestServices
         }
 
         // Нашли запрос
-        if (request.RespondedPeople.Count() < request.NeededPeopleNumber)
-        {
-            // Добавляем студента к Request
-            request.RespondedPeople.Append(
-                    _UserServices.GetMyId() // Получаем Id откликнувшегося студента
-                    );
-            // NoContent (204)
-            response = BaseResponse.NoContent("Successed");
-            return response;
-        }
+        // if (request.RespondedPeople.Count() < request.NeededPeopleNumber)
+        // {
+        //     // Получаем Id откликнувшегося студента
+        //     int myId = _UserServices.GetMyId();
+        //     // Добавляем студента к Request
+        //     request.RespondedPeople.Add(myId);
+        //     // Обновляем запрос в БД
+        //     await _RequestRepository.Update(request);
+        //     // NoContent (204)
+        //     response = BaseResponse.NoContent("Successed");
+        //     return response;
+        // }
 
         // BadRequest (400)
-        response = BaseResponse.BadRequest("Successed");
+        response = BaseResponse.BadRequest("");
         return response;
 
     }

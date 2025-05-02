@@ -282,7 +282,7 @@ public class AdminRequestServices : IAdminRequestServices
         request.Id = 0;
         request.IsFailed = false;
         request.IsComplited = false;
-        request.RespondedPeople = [];
+        // request.RespondedPeople.Clear();
 
         await _RequestRepository.Create(request);
 
@@ -348,7 +348,7 @@ public class AdminRequestServices : IAdminRequestServices
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
         request.PointNumber = newRequest.PointNumber;
-        request.RespondedPeople = newRequest.RespondedPeople;
+        // request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
         request.Description = newRequest.Description;
         request.IsFailed = newRequest.IsFailed;
