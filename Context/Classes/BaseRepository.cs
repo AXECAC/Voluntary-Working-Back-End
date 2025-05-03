@@ -20,7 +20,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     }
 
     // Взять сущности из Db
-    public async Task<List<T>> Select()
+    public async Task<List<T>> GetAll()
     {
         return await Db.Set<T>().ToListAsync();
     }

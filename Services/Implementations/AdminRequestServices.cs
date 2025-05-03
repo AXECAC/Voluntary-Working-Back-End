@@ -7,8 +7,8 @@ namespace Services;
 // Класс AdminRequestServices
 public class AdminRequestServices : IAdminRequestServices
 {
-    readonly IRequestRepository _RequestRepository;
-    readonly ICachingServices<Request> _CachingServices;
+    private readonly IRequestRepository _RequestRepository;
+    private readonly ICachingServices<Request> _CachingServices;
 
     public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices)
     {
@@ -22,7 +22,7 @@ public class AdminRequestServices : IAdminRequestServices
         BaseResponse<IEnumerable<Request>> response;
 
         // Ищем в БД
-        var requests = await _RequestRepository.Select();
+        var requests = await _RequestRepository.GetAll();
 
         // Если не найдено Request
         // NoContent (204)
@@ -282,7 +282,6 @@ public class AdminRequestServices : IAdminRequestServices
         request.Id = 0;
         request.IsFailed = false;
         request.IsComplited = false;
-        request.RespondedPeople = [];
 
         await _RequestRepository.Create(request);
 
@@ -348,7 +347,7 @@ public class AdminRequestServices : IAdminRequestServices
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
         request.PointNumber = newRequest.PointNumber;
-        request.RespondedPeople = newRequest.RespondedPeople;
+        // request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
         request.Description = newRequest.Description;
         request.IsFailed = newRequest.IsFailed;

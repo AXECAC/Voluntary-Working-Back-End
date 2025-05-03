@@ -1,20 +1,22 @@
 using DataBase;
 namespace Services;
 
-// Class PublicRequest
-public class PublicRequest
+// Class PrivateRequest
+public class PrivateRequest
 {
     public int Id { get; set; }
+    public int AdminId { get; set; }
     public string Address { get; set; }
     public DateTime Date { get; set; }
     public DateTime DeadLine { get; set; }
     public int PointNumber { get; set; }
     public int NeededPeopleNumber { get; set; }
-    public int RespondedPeople { get; set; }
+    public List<int> RespondedPeople { get; set; }
     public string Description { get; set; }
     public bool IsComplited { get; set; }
+    public bool IsFailed { get; set; }
 
-    public PublicRequest(Request request)
+    public PrivateRequest(Request request)
     {
         this.Id = request.Id;
         this.Address = request.Address;
@@ -22,12 +24,12 @@ public class PublicRequest
         this.DeadLine = request.DeadLine;
         this.PointNumber = request.PointNumber;
         this.NeededPeopleNumber = request.NeededPeopleNumber;
-        this.RespondedPeople = 0; // Обнуляем количество откликнувших
+        this.RespondedPeople = new List<int>(); // Обнуляем количество откликнувших
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
     }
 
-    public PublicRequest(Request request, List<RespondedPeople> respondedPeople)
+    public PrivateRequest(Request request, List<RespondedPeople> respondedPeople)
     {
         this.Id = request.Id;
         this.Address = request.Address;
@@ -35,26 +37,25 @@ public class PublicRequest
         this.DeadLine = request.DeadLine;
         this.PointNumber = request.PointNumber;
         this.NeededPeopleNumber = request.NeededPeopleNumber;
-        this.SetRespondedPeople(respondedPeople); // Устанавливаем количество откликнувшихся User
+        this.SetRespondedPeople(respondedPeople); // Устанавливаем UserId откликнувшихся User
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
     }
 
-    // Устанавливаем количество откликнувшихся User
+    // Устанавливаем UserId откликнувшихся User
     public void SetRespondedPeople(List<RespondedPeople> respondedPeople)
     {
         // Обнуляем
-        this.RespondedPeople = 0;
+        this.RespondedPeople = new List<int>();
         // Считаем
         for (int i = 0; i < respondedPeople.Count; ++i)
         {
             // Если Id PublicRequest и RequestId совпадают
             if (this.Id == respondedPeople[i].RequestId)
             {
-                // Увеличиваем количество людей
-                this.RespondedPeople += 1;
+                // Добавляем UserId
+                this.RespondedPeople.Add(respondedPeople[i].UserId);
             }
         }
-
     }
 }
