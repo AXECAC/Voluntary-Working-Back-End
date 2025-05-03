@@ -34,7 +34,7 @@ namespace Controllers.StudentRequestController
         }
 
         [HttpPut]
-        public async Task<IActionResult> AssigneeMe(int requestId)
+        public async Task<IActionResult> AssignMe(int requestId)
         {
             // Если requestId < 1 => не валидный Id
             if (requestId < 1)
@@ -42,7 +42,7 @@ namespace Controllers.StudentRequestController
                 // Вернуть response (422)
                 return UnprocessableEntity();
             }
-            var response = await _StudentRequestServices.AssigneeMe(requestId);
+            var response = await _StudentRequestServices.AssignMe(requestId);
 
             // Нет запросов
             if (response.StatusCode == DataBase.StatusCodes.NotFound)
@@ -61,7 +61,7 @@ namespace Controllers.StudentRequestController
         }
 
         [HttpDelete]
-        public async Task<IActionResult> UnassigneeMe(int requestId)
+        public async Task<IActionResult> UnassignMe(int requestId)
         {
             // Если requestId < 1 => не валидный Id
             if (requestId < 1)
@@ -69,7 +69,7 @@ namespace Controllers.StudentRequestController
                 // Вернуть response (422)
                 return UnprocessableEntity();
             }
-            var response = await _StudentRequestServices.UnassigneeMe(requestId);
+            var response = await _StudentRequestServices.UnassignMe(requestId);
 
             // Нет запросов
             if (response.StatusCode == DataBase.StatusCodes.NotFound)

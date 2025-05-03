@@ -8,8 +8,8 @@ public interface IStudentRequestServices
     Task<IBaseResponse<IEnumerable<PublicRequest>>> GetRequests();
 
     // Добавить Id студента в откликнувшихся на запрос
-    Task<IBaseResponse> AssigneeMe(int request);
+    Task<IBaseResponse> AssignMe(int request);
 
     // Удалить Id студента из откликнувшихся на запрос
-    Task<IBaseResponse> UnassigneeMe(int request);
+    Task<IBaseResponse> UnassignMe(int request);
 }

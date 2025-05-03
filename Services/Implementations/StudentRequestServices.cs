@@ -63,7 +63,7 @@ public class StudentRequestServices : IStudentRequestServices
     }
 
     // Добавить Id студента в откликнувшихся на запрос
-    public async Task<IBaseResponse> AssigneeMe(int requestId)
+    public async Task<IBaseResponse> AssignMe(int requestId)
     {
         BaseResponse response;
 
@@ -115,7 +115,7 @@ public class StudentRequestServices : IStudentRequestServices
         return response;
     }
 
-    public async Task<IBaseResponse> UnassigneeMe(int requestId)
+    public async Task<IBaseResponse> UnassignMe(int requestId)
     {
         BaseResponse response;
 
