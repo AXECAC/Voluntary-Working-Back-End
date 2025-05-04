@@ -449,7 +449,7 @@ public class AdminRequestServices : IAdminRequestServices
             // Ищем в БД
             requests = await _RequestRepository
                 .GetQueryable()
-            .Where(x => x.IsFailed == true)
+                .Where(x => x.IsFailed == true)
                 .Select(request => new PrivateRequest(request, respondedPeople))
                 .ToListAsync();
         }
@@ -458,7 +458,7 @@ public class AdminRequestServices : IAdminRequestServices
             // Ищем в БД
             requests = await _RequestRepository
                 .GetQueryable()
-            .Where(x => x.IsFailed == true)
+                .Where(x => x.IsFailed == true)
                 .Select(request => new PrivateRequest(request))
                 .ToListAsync();
         }
@@ -550,7 +550,6 @@ public class AdminRequestServices : IAdminRequestServices
         request.PointNumber = newRequest.PointNumber;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
         request.Description = newRequest.Description;
-        request.IsFailed = newRequest.IsFailed;
 
         // Добавляем измененного Request
         _CachingServices.SetAsync(request, request.Id.ToString());
