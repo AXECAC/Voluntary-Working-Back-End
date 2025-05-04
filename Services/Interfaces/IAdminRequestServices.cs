@@ -35,7 +35,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsCompleted();
 
     // Получить все Requests по IsFailed == true
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsFailed();
+    Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsFailed();
 
     // Создать Request
     Task<IBaseResponse> CreateRequest(Request request);
