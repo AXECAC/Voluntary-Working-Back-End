@@ -28,6 +28,7 @@ public class PrivateRequest
         this.RespondedPeople = new List<int>(); // Обнуляем количество откликнувших
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
+        this.IsFailed = request.IsFailed;
     }
 
     public PrivateRequest(Request request, List<RespondedPeople> respondedPeople)
@@ -42,6 +43,7 @@ public class PrivateRequest
         this.SetRespondedPeople(respondedPeople); // Устанавливаем UserId откликнувшихся User
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
+        this.IsFailed = request.IsFailed;
     }
 
     // Устанавливаем UserId откликнувшихся User
