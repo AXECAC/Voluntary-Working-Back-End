@@ -548,7 +548,6 @@ public class AdminRequestServices : IAdminRequestServices
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
         request.PointNumber = newRequest.PointNumber;
-        // request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
         request.Description = newRequest.Description;
         request.IsFailed = newRequest.IsFailed;

@@ -265,25 +265,26 @@ namespace Controllers.AdminRequestController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> EditRequest(Request request)
+        public async Task<IActionResult> EditRequest(PrivateRequest request)
         {
+            Request crRequest = request.ToRequest();
             // Проверка request на валидность
-            if (!request.IsValid())
+            if (!crRequest.IsValid())
             {
                 return UnprocessableEntity();
             }
 
             // Задаем Id админа/Dev-а изменившего это запрос
-            request.AdminId = _UserServices.GetMyId();
+            crRequest.AdminId = _UserServices.GetMyId();
 
             // Меняем Request
-            var response = await _AdminRequestServices.EditRequest(request);
+            var response = await _AdminRequestServices.EditRequest(crRequest);
 
             // Получилось изменить
             if (response.StatusCode == DataBase.StatusCodes.Created)
             {
                 // Вернуть response 200
-                return CreatedAtAction(nameof(request), "Successed");
+                return CreatedAtAction(nameof(crRequest), "Successed");
             }
 
             // Нет такого запроса
