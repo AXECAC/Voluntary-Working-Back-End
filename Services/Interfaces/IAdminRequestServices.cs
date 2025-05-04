@@ -23,7 +23,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByAddress(string address);
 
     // Получить все Requests по DateTime начала
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTBegin(DateTime dateOfBegin);
+    Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTBegin(DateTime dateOfBegin);
 
     // Получить все Requests доступные на момент date
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDT(DateTime date);
