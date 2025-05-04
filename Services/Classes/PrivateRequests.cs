@@ -16,6 +16,8 @@ public class PrivateRequest
     public bool IsComplited { get; set; }
     public bool IsFailed { get; set; }
 
+    public PrivateRequest() { }
+
     public PrivateRequest(Request request)
     {
         this.Id = request.Id;
