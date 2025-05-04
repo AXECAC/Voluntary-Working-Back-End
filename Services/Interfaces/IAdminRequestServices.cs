@@ -14,7 +14,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber);
 
     // Получить Requests по PointNumber
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByPointNumber(int pointNumber);
+    Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByPointNumber(int pointNumber);
 
     // Получить все Requests созданные и закрытые админом по его Id
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAdminId(int adminId);
