@@ -9,4 +9,13 @@ public class RespondedPeopleRepository : BaseRepository<RespondedPeople>, IRespo
     {
         Db = db;
     }
+
+    // Удалить сущности из Db
+    public async Task<bool> Delete(List<RespondedPeople> entity)
+    {
+        Db.RemoveRange(entity);
+        await Db.SaveChangesAsync();
+
+        return true;
+    }
 }
