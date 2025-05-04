@@ -8,16 +8,16 @@ public static class RespondedPeopleExtentions
     public static void Generate(this List<RespondedPeople> respondedPeople, List<int> users, int requestId)
     {
         // Обнуляем
-        respondedPeople = new List<RespondedPeople>();
+        respondedPeople.Clear();
 
-        
-        RespondedPeople tempRP = new RespondedPeople();
-
-        tempRP.RequestId = requestId;
+        // Заполняем List
         for (int i = 0; i < users.Count; i++)
         {
-            tempRP.UserId = users[i];
-            respondedPeople.Add(tempRP);
+            respondedPeople.Add(new RespondedPeople()
+            {
+                RequestId = requestId,
+                UserId = users[i]
+            });
         }
     }
 }
