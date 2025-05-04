@@ -98,25 +98,44 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить Requests по NeededPeopleNumber
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.NeededPeopleNumber == neededPeopleNumber)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.NeededPeopleNumber == neededPeopleNumber)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.NeededPeopleNumber == neededPeopleNumber)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
