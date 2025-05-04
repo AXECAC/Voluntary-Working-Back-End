@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Context;
 using DataBase;
+using Extentions;
 using Services.Caching;
 namespace Services;
 
@@ -61,9 +62,15 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить Request по id
-    public async Task<IBaseResponse<Request>> GetRequest(int id)
+    public async Task<IBaseResponse<PrivateRequest>> GetRequest(int id)
     {
-        BaseResponse<Request> response;
+        BaseResponse<PrivateRequest> response;
+
+        // Ищем всех откликнувшихся на этот запрос
+        var respondedPeople = await _RespondedPeopleRepository
+            .GetQueryable()
+            .Where(rp => rp.RequestId == id)
+            .ToListAsync();
 
         // Ищем в кэше
         var request = await _CachingServices.GetAsync(id);
@@ -79,14 +86,14 @@ public class AdminRequestServices : IAdminRequestServices
         // NotFound (404)
         if (request == null)
         {
-            response = BaseResponse<Request>.NotFound("Request not found");
+            response = BaseResponse<PrivateRequest>.NotFound("Request not found");
             return response;
         }
 
         // Нашли Request
         _CachingServices.SetAsync(request, request.Id.ToString());
         // Ok (200)
-        response = BaseResponse<Request>.Ok(request);
+        response = BaseResponse<PrivateRequest>.Ok(new PrivateRequest(request, respondedPeople));
         return response;
     }
 

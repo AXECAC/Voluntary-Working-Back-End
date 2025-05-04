@@ -8,7 +8,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequests();
 
     // Получить Request по id
-    Task<IBaseResponse<Request>> GetRequest(int id);
+    Task<IBaseResponse<PrivateRequest>> GetRequest(int id);
 
     // Получить Requests по NeededPeopleNumber
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber);
