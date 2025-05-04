@@ -19,6 +19,7 @@ public class PrivateRequest
     public PrivateRequest(Request request)
     {
         this.Id = request.Id;
+        this.AdminId = request.AdminId;
         this.Address = request.Address;
         this.Date = request.Date;
         this.DeadLine = request.DeadLine;
@@ -32,6 +33,7 @@ public class PrivateRequest
     public PrivateRequest(Request request, List<RespondedPeople> respondedPeople)
     {
         this.Id = request.Id;
+        this.AdminId = request.AdminId;
         this.Address = request.Address;
         this.Date = request.Date;
         this.DeadLine = request.DeadLine;
