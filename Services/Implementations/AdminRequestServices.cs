@@ -8,32 +8,54 @@ namespace Services;
 public class AdminRequestServices : IAdminRequestServices
 {
     private readonly IRequestRepository _RequestRepository;
+    private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly ICachingServices<Request> _CachingServices;
 
-    public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices)
+    public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices,
+            IRespondedPeopleRepository respondedPeopleRepository)
     {
         _RequestRepository = requestRepository;
+        _RespondedPeopleRepository = respondedPeopleRepository;
         _CachingServices = cachingServices;
     }
 
     // Получить все Requests
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequests()
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequests()
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository.GetAll();
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Если не найдено Request
         // NoContent (204)
         if (requests.Count == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NoContent("Find 0 requests");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NoContent("Find 0 requests");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
 
         return response;
     }
@@ -359,5 +381,4 @@ public class AdminRequestServices : IAdminRequestServices
         response = BaseResponse.Created("Request edit");
         return response;
     }
-
 }

@@ -5,7 +5,7 @@ namespace Services;
 public interface IAdminRequestServices
 {
     // Получить все Requests
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequests();
+    Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequests();
 
     // Получить Request по id
     Task<IBaseResponse<Request>> GetRequest(int id);
