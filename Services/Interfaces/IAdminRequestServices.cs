@@ -29,7 +29,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDT(DateTime date);
 
     // Получить все Requests по DateTime дедлайна
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTDeadLine(DateTime dateOfDeadLine);
+    Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTDeadLine(DateTime dateOfDeadLine);
 
     // Получить все Requests по IsCompleted == true
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsCompleted();
