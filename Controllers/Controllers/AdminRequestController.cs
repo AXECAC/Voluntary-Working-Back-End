@@ -242,22 +242,23 @@ namespace Controllers.AdminRequestController
         [HttpPost]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> CreateRequest(Request request)
+        public async Task<IActionResult> CreateRequest(PrivateRequest request)
         {
+            Request crRequest = request.ToRequest();
             // Проверка request на валидность
-            if (!request.IsValid())
+            if (!crRequest.IsValid())
             {
                 return UnprocessableEntity();
             }
 
             // Задаем Id админа/Dev-а создавашего это запрос
-            request.AdminId = _UserServices.GetMyId();
+            crRequest.AdminId = _UserServices.GetMyId();
 
             // Создаем Request
-            await _AdminRequestServices.CreateRequest(request);
+            await _AdminRequestServices.CreateRequest(crRequest);
 
             // Return response 200
-            return CreatedAtAction(nameof(request), "Successed");
+            return CreatedAtAction(nameof(crRequest), "Successed");
         }
 
         [HttpPut]
