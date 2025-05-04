@@ -46,6 +46,27 @@ public class PrivateRequest
         this.IsFailed = request.IsFailed;
     }
 
+    // Конструктор копирования PrivateRequest в Request
+    public Request ToRequest()
+    {
+        // Создаем Request
+        Request req = new Request();
+
+        // Передаем значения из PrivateRequest в Request
+        req.Id = this.Id;
+        req.AdminId = this.AdminId;
+        req.Address = this.Address;
+        req.Date = this.Date;
+        req.DeadLine = this.DeadLine;
+        req.PointNumber = this.PointNumber;
+        req.NeededPeopleNumber = this.NeededPeopleNumber;
+        req.Description = this.Description;
+        req.IsComplited = this.IsComplited;
+        req.IsFailed = this.IsFailed;
+
+        return req;
+    }
+
     // Устанавливаем UserId откликнувшихся User
     public void SetRespondedPeople(List<RespondedPeople> respondedPeople)
     {
