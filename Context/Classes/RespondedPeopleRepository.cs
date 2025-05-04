@@ -18,4 +18,12 @@ public class RespondedPeopleRepository : BaseRepository<RespondedPeople>, IRespo
 
         return true;
     }
+
+    // Создать сущность в Db 
+    public async Task<bool> Create(List<RespondedPeople> entity)
+    {
+        await Db.AddRangeAsync(entity);
+        await Db.SaveChangesAsync();
+        return true;
+    }
 }
