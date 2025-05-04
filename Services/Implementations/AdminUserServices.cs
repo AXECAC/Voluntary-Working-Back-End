@@ -177,6 +177,7 @@ public class AdminUserServices : IAdminUserServices
         user.Password = userEntity.Password;
         user.Name = userEntity.Name;
         user.Group = userEntity.Group;
+        user.TelegramUrl = userEntity.TelegramUrl;
 
         // User edit (201)
         await _UserRepository.Update(user);
