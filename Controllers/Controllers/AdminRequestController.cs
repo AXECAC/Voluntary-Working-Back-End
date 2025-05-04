@@ -17,11 +17,14 @@ namespace Controllers.AdminRequestController
     {
         private readonly IUserServices _UserServices;
         private readonly IAdminRequestServices _AdminRequestServices;
+        private readonly IRespondedPeopleServices _RespondedPeopleServices;
 
-        public AdminRequestController(IUserServices userServices, IAdminRequestServices adminRequestServices)
+        public AdminRequestController(IUserServices userServices, IAdminRequestServices adminRequestServices,
+                IRespondedPeopleServices respondedPeopleServices)
         {
             _UserServices = userServices;
             _AdminRequestServices = adminRequestServices;
+            _RespondedPeopleServices = respondedPeopleServices;
         }
 
         // AdminFeed --- лента админов
@@ -269,20 +272,38 @@ namespace Controllers.AdminRequestController
         {
             Request crRequest = request.ToRequest();
             // Проверка request на валидность
-            if (!crRequest.IsValid())
+            if (!crRequest.IsValid() || !(crRequest.NeededPeopleNumber >= request.RespondedPeople.Count)
+                    || (request.RespondedPeople.Exists(x => x < 1)))
             {
                 return UnprocessableEntity();
+            }
+
+            request.RespondedPeople.Distinct();
+
+            var response = await _UserServices.CheckIdsValid(request.RespondedPeople);
+
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Нет одного из Id откликнувшихся
+                // Вернуть response (404)
+                return NotFound();
             }
 
             // Задаем Id админа/Dev-а изменившего это запрос
             crRequest.AdminId = _UserServices.GetMyId();
 
             // Меняем Request
-            var response = await _AdminRequestServices.EditRequest(crRequest);
+            response = await _AdminRequestServices.EditRequest(crRequest);
 
             // Получилось изменить
             if (response.StatusCode == DataBase.StatusCodes.Created)
             {
+                // Меняем RespondedPeople
+                List<RespondedPeople> respondedPeoples = new List<RespondedPeople>();
+                respondedPeoples.Generate(request.RespondedPeople, request.Id);
+
+                response = await _RespondedPeopleServices.EditRespondedPeople(respondedPeoples);
+
                 // Вернуть response 200
                 return CreatedAtAction(nameof(crRequest), "Successed");
             }
