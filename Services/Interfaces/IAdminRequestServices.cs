@@ -32,7 +32,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTDeadLine(DateTime dateOfDeadLine);
 
     // Получить все Requests по IsCompleted == true
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsCompleted();
+    Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsCompleted();
 
     // Получить все Requests по IsFailed == true
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsFailed();
