@@ -26,7 +26,7 @@ public interface IAdminRequestServices
     Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTBegin(DateTime dateOfBegin);
 
     // Получить все Requests доступные на момент date
-    Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDT(DateTime date);
+    Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDT(DateTime date);
 
     // Получить все Requests по DateTime дедлайна
     Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTDeadLine(DateTime dateOfDeadLine);
