@@ -16,9 +16,12 @@ public class PrivateRequest
     public bool IsComplited { get; set; }
     public bool IsFailed { get; set; }
 
+    public PrivateRequest() { }
+
     public PrivateRequest(Request request)
     {
         this.Id = request.Id;
+        this.AdminId = request.AdminId;
         this.Address = request.Address;
         this.Date = request.Date;
         this.DeadLine = request.DeadLine;
@@ -27,11 +30,13 @@ public class PrivateRequest
         this.RespondedPeople = new List<int>(); // Обнуляем количество откликнувших
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
+        this.IsFailed = request.IsFailed;
     }
 
     public PrivateRequest(Request request, List<RespondedPeople> respondedPeople)
     {
         this.Id = request.Id;
+        this.AdminId = request.AdminId;
         this.Address = request.Address;
         this.Date = request.Date;
         this.DeadLine = request.DeadLine;
@@ -40,6 +45,28 @@ public class PrivateRequest
         this.SetRespondedPeople(respondedPeople); // Устанавливаем UserId откликнувшихся User
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
+        this.IsFailed = request.IsFailed;
+    }
+
+    // Конструктор копирования PrivateRequest в Request
+    public Request ToRequest()
+    {
+        // Создаем Request
+        Request req = new Request();
+
+        // Передаем значения из PrivateRequest в Request
+        req.Id = this.Id;
+        req.AdminId = this.AdminId;
+        req.Address = this.Address;
+        req.Date = this.Date;
+        req.DeadLine = this.DeadLine;
+        req.PointNumber = this.PointNumber;
+        req.NeededPeopleNumber = this.NeededPeopleNumber;
+        req.Description = this.Description;
+        req.IsComplited = this.IsComplited;
+        req.IsFailed = this.IsFailed;
+
+        return req;
     }
 
     // Устанавливаем UserId откликнувшихся User

@@ -113,6 +113,7 @@ builder.Services.AddSingleton<IStudentRequestServices, StudentRequestServices>()
 builder.Services.AddSingleton<IAdminUserServices, AdminUserServices>();
 builder.Services.AddSingleton<IAdminRequestServices, AdminRequestServices>();
 
+builder.Services.AddSingleton<IRespondedPeopleServices, RespondedPeopleServices>();
 
 var app = builder.Build();
 

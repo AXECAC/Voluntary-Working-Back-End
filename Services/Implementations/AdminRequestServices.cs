@@ -8,40 +8,68 @@ namespace Services;
 public class AdminRequestServices : IAdminRequestServices
 {
     private readonly IRequestRepository _RequestRepository;
+    private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly ICachingServices<Request> _CachingServices;
 
-    public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices)
+    public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices,
+            IRespondedPeopleRepository respondedPeopleRepository)
     {
         _RequestRepository = requestRepository;
+        _RespondedPeopleRepository = respondedPeopleRepository;
         _CachingServices = cachingServices;
     }
 
     // Получить все Requests
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequests()
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequests()
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository.GetAll();
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Если не найдено Request
         // NoContent (204)
         if (requests.Count == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NoContent("Find 0 requests");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NoContent("Find 0 requests");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
 
         return response;
     }
 
     // Получить Request по id
-    public async Task<IBaseResponse<Request>> GetRequest(int id)
+    public async Task<IBaseResponse<PrivateRequest>> GetRequest(int id)
     {
-        BaseResponse<Request> response;
+        BaseResponse<PrivateRequest> response;
+
+        // Ищем всех откликнувшихся на этот запрос
+        var respondedPeople = await _RespondedPeopleRepository
+            .GetQueryable()
+            .Where(rp => rp.RequestId == id)
+            .ToListAsync();
 
         // Ищем в кэше
         var request = await _CachingServices.GetAsync(id);
@@ -57,221 +85,394 @@ public class AdminRequestServices : IAdminRequestServices
         // NotFound (404)
         if (request == null)
         {
-            response = BaseResponse<Request>.NotFound("Request not found");
+            response = BaseResponse<PrivateRequest>.NotFound("Request not found");
             return response;
         }
 
         // Нашли Request
         _CachingServices.SetAsync(request, request.Id.ToString());
         // Ok (200)
-        response = BaseResponse<Request>.Ok(request);
+        response = BaseResponse<PrivateRequest>.Ok(new PrivateRequest(request, respondedPeople));
         return response;
     }
 
     // Получить Requests по NeededPeopleNumber
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.NeededPeopleNumber == neededPeopleNumber)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.NeededPeopleNumber == neededPeopleNumber)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.NeededPeopleNumber == neededPeopleNumber)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить Requests по PointNumber
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByPointNumber(int pointNumber)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByPointNumber(int pointNumber)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.PointNumber == pointNumber)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.PointNumber == pointNumber)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.PointNumber == pointNumber)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
+
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить все Requests созданные и закрытые админом по его Id
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAdminId(int adminId)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByAdminId(int adminId)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.AdminId == adminId)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.AdminId == adminId)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.AdminId == adminId)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить все Requests по адресу
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsByAddress(string address)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByAddress(string address)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.Address == address)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.Address == address)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.Address == address)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить все Requests по DateTime начала
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTBegin(DateTime dateOfBegin)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTBegin(DateTime dateOfBegin)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.Date == dateOfBegin)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.Date == dateOfBegin)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.Date == dateOfBegin)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить все Requests доступные на момент date
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDT(DateTime date)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDT(DateTime date)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.Date <= date && date < x.DeadLine)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.Date <= date && date < x.DeadLine)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.Date <= date && date < x.DeadLine)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить все Requests по DateTime дедлайна
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsDTDeadLine(DateTime dateOfDeadLine)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTDeadLine(DateTime dateOfDeadLine)
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.DeadLine == dateOfDeadLine)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.DeadLine == dateOfDeadLine)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.DeadLine == dateOfDeadLine)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить все Requests по IsCompleted == true
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsCompleted()
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsCompleted()
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.IsComplited == true)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.IsComplited == true)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.IsComplited == true)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
+
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
     // Получить все Requests по IsFailed == true
-    public async Task<IBaseResponse<IEnumerable<Request>>> GetRequestsFailed()
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsFailed()
     {
-        BaseResponse<IEnumerable<Request>> response;
+        BaseResponse<IEnumerable<PrivateRequest>> response;
 
-        // Ищем в БД
-        var requests = await _RequestRepository
-            .Where(x => x.IsFailed == true)
-            .ToListAsync();
+        // Берем всех откликнувшихся на запросы людей
+        var respondedPeople = await _RespondedPeopleRepository.GetAll();
+
+        List<PrivateRequest> requests;
+        // Если есть откликнувшеся люди
+        if (respondedPeople != null && respondedPeople.Count > 0)
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.IsFailed == true)
+                .Select(request => new PrivateRequest(request, respondedPeople))
+                .ToListAsync();
+        }
+        else
+        {
+            // Ищем в БД
+            requests = await _RequestRepository
+                .GetQueryable()
+                .Where(x => x.IsFailed == true)
+                .Select(request => new PrivateRequest(request))
+                .ToListAsync();
+        }
 
         // Не нашли в БД
         // NotFound (404)
         if (requests == null || requests.Count() == 0)
         {
-            response = BaseResponse<IEnumerable<Request>>.NotFound("Requests not found");
+            response = BaseResponse<IEnumerable<PrivateRequest>>.NotFound("Requests not found");
             return response;
         }
 
         // Ok (200)
-        response = BaseResponse<IEnumerable<Request>>.Ok(requests);
+        response = BaseResponse<IEnumerable<PrivateRequest>>.Ok(requests);
         return response;
     }
 
@@ -347,10 +548,8 @@ public class AdminRequestServices : IAdminRequestServices
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
         request.PointNumber = newRequest.PointNumber;
-        // request.RespondedPeople = newRequest.RespondedPeople;
         request.NeededPeopleNumber = newRequest.NeededPeopleNumber;
         request.Description = newRequest.Description;
-        request.IsFailed = newRequest.IsFailed;
 
         // Добавляем измененного Request
         _CachingServices.SetAsync(request, request.Id.ToString());
@@ -359,5 +558,4 @@ public class AdminRequestServices : IAdminRequestServices
         response = BaseResponse.Created("Request edit");
         return response;
     }
-
 }
