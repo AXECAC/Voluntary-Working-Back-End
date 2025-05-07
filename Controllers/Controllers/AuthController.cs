@@ -12,11 +12,13 @@ namespace Controllers.AuthController
     public class AuthController : Controller
     {
         private readonly IAuthServices _AuthServices;
+        private readonly IUserServices _UserServices;
         private readonly string? _secretKey;
 
-        public AuthController(IAuthServices authServices, IConfiguration configuration)
+        public AuthController(IAuthServices authServices, IUserServices userServices, IConfiguration configuration)
         {
             _AuthServices = authServices;
+            _UserServices = userServices;
             _secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
 
@@ -102,8 +104,9 @@ namespace Controllers.AuthController
         // Проверить токен (на валидность, не является ли он старым)(максимум 3 часа жизни)
         public IActionResult Check()
         {
+            var role = _UserServices.GetMyRole();
             // Токен валидный, а иначе вернуть Unauthorized
-            return Ok();
+            return Ok(new {data = role});
         }
     }
 }
