@@ -65,6 +65,7 @@ public class AdminUserServices : IAdminUserServices
     {
         // Хэширование Password
         userEntity = _HashingServices.Hashing(userEntity);
+        userEntity.Id = 0;
         userEntity.Role = "Student";
         userEntity.Points = 0;
         userEntity.FinishedRequests = 0;
