@@ -21,5 +21,5 @@ sudo docker exec postgresVoluntaryWorking pg_dump -U aragami voluntarydb > backu
 # Restore db
 
 ```bash
-sudo docker exec -i postgresVoluntaryWorking psql -U aragami -d voluntarydb < backup.sql
+sudo docker exec -i postgresVoluntaryWorking psql --port=5431 -U aragami -d voluntarydb < backup.sql
 ```
