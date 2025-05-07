@@ -3,6 +3,7 @@ name: 'Bug/Fix db:'
 about: I think this not working or working differently (db part)
 title: 'Bug/Fix:'
 labels: bug, fix
+type: Bug
 assignees: Anarchy73
 
 ---

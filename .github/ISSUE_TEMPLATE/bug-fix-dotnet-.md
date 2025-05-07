@@ -3,6 +3,7 @@ name: 'Bug/Fix dotnet:'
 about: I think this not working or working differently (dotnet part)
 title: 'Bug/Fix:'
 labels: bug, fix
+type: Bug
 assignees: aragami3070
 
 ---
