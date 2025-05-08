@@ -21,6 +21,11 @@ public class UserServices : IUserServices
         return Convert.ToInt32(_HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value);
     }
 
+    public string GetMyRole()
+    {
+        return _HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.Role).Value;
+    }
+
 
     public async Task<IBaseResponse> CheckIdsValid(List<int> ids)
     {
