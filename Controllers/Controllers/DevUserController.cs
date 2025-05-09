@@ -20,7 +20,6 @@ namespace Controllers.DevUserController
             _DevUserServices = devUserServices;
         }
 
-        // Some Post method
         [HttpPut]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest)]
@@ -35,6 +34,34 @@ namespace Controllers.DevUserController
 
             // Выдаем роль Admin по почте
             var response = await _DevUserServices.PromoteToAdmin(userEmail);
+
+            if (response.StatusCode == DataBase.StatusCodes.BadRequest)
+            {
+                return BadRequest();
+            }
+
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DemoteToStudent(string userEmail)
+        {
+            // userEmail not ValidEmail (Плохой ввод)
+            if (!userEmail.IsValidEmail())
+            {
+                return UnprocessableEntity();
+            }
+
+            // Меняем роль на Student по почте
+            var response = await _DevUserServices.DemoteToStudent(userEmail);
 
             if (response.StatusCode == DataBase.StatusCodes.BadRequest)
             {
