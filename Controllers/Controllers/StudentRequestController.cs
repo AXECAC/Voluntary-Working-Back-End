@@ -12,10 +12,12 @@ namespace Controllers.StudentRequestController
     public class StudentRequestController : Controller
     {
         private readonly IStudentRequestServices _StudentRequestServices;
+        private readonly IUserServices _UserServices;
 
-        public StudentRequestController(IStudentRequestServices studentRequestServices)
+        public StudentRequestController(IStudentRequestServices studentRequestServices, IUserServices userServices)
         {
             _StudentRequestServices = studentRequestServices;
+            _UserServices = userServices;
         }
         // PublicFeed --- лента пользователей
         [HttpGet]
@@ -85,6 +87,21 @@ namespace Controllers.StudentRequestController
 
             // Вернуть response 204
             return NoContent();
+        }
+        
+        [HttpPut]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var response = await _UserServices.GetMyProfile();
+
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+
+            // Вернуть response 200
+            return Ok(response.Data);
         }
     }
 }
