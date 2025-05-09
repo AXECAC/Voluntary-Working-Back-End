@@ -51,7 +51,7 @@ public class UserServices : IUserServices
     {
         BaseResponse<User> response;
 
-        int myId = Convert.ToInt32(_HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value);
+        int myId = GetMyId();
 
         var user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == myId);
 
