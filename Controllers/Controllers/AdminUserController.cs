@@ -7,9 +7,10 @@ using Extentions;
 namespace Controllers.AdminUserController
 {
     [Route("api/[controller]/[action]")]
-    [Authorize]
+    [Authorize(Roles = "Dev, Admin")]
     [ApiController]
     [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status403Forbidden)]
     [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status500InternalServerError)]
     // UserController класс контроллер
     public class AdminUserController : Controller
@@ -95,9 +96,7 @@ namespace Controllers.AdminUserController
 
         // Create метод
         [HttpPost]
-        [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
-        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status403Forbidden)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status409Conflict)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> Create(User userEntity)
@@ -123,9 +122,7 @@ namespace Controllers.AdminUserController
 
         // Edit метод
         [HttpPost]
-        [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
-        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status403Forbidden)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
         public async Task<IActionResult> Edit(User userEntity, string oldEmail)
@@ -153,7 +150,6 @@ namespace Controllers.AdminUserController
 
         // Delete метод
         [HttpDelete]
-        [Authorize(Roles = "Dev, Admin")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
