@@ -11,4 +11,6 @@ public interface IUserServices
     string GetMyRole();
 
     Task<IBaseResponse> CheckIdsValid(List<int> ids);
+
+    Task<IBaseResponse<User>> GetMyProfile();
 }

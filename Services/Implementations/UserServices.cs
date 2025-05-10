@@ -45,4 +45,23 @@ public class UserServices : IUserServices
         response = BaseResponse.NoContent();
         return response;
     }
+
+
+    public async Task<IBaseResponse<User>> GetMyProfile()
+    {
+        BaseResponse<User> response;
+
+        int myId = GetMyId();
+
+        var user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == myId);
+
+        if (user == null)
+        {
+            response = BaseResponse<User>.NotFound("User not found");
+            return response;
+        }
+
+        response = BaseResponse<User>.Ok(user);
+        return response;
+    }
 }
