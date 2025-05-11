@@ -10,13 +10,16 @@ public class UserServices : IUserServices
 {
     private readonly IUserRepository _UserRepository;
     private readonly IRequestRepository _RequestRepository;
+    private readonly IHashingServices _HashingServices;
     private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly IHttpContextAccessor _HttpContextAccessor;
 
-    public UserServices(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository,
-            IRequestRepository requestRepository, IRespondedPeopleRepository respondedPeopleRepository)
+    public UserServices(IHttpContextAccessor httpContextAccessor, IHashingServices hashingServices,
+            IUserRepository userRepository, IRequestRepository requestRepository,
+            IRespondedPeopleRepository respondedPeopleRepository)
     {
         _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        _HashingServices = hashingServices;
         _UserRepository = userRepository;
         _RequestRepository = requestRepository;
         _RespondedPeopleRepository = respondedPeopleRepository;
@@ -115,6 +118,30 @@ public class UserServices : IUserServices
         }
         response = BaseResponse<List<CurrentRequest>>.NotFound();
         return response;
-
     }
+
+    // Поменять пароль
+    public async Task<IBaseResponse> ChangeMyPassword(string newPassword)
+    {
+        BaseResponse response;
+
+        int myId = GetMyId();
+
+        var user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == myId);
+
+        if (user == null)
+        {
+            response = BaseResponse.NotFound("User not found");
+            return response;
+        }
+
+        user.Password = newPassword;
+        _HashingServices.Hashing(user);
+
+        await _UserRepository.Update(user);
+
+        response = BaseResponse.NoContent();
+        return response;
+    }
+
 }
