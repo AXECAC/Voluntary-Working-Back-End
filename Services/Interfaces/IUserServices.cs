@@ -21,4 +21,7 @@ public interface IUserServices
 
     // Поменять пароль
     Task<IBaseResponse> ChangeMyPassword(string newPassword);
+
+    // Поменять Name, Group, TelegramUrl
+    Task<IBaseResponse> EditMyProfile(User editedUser);
 }
