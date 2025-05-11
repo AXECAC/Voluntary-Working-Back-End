@@ -14,15 +14,15 @@ public class RespondedPeopleServices : IRespondedPeopleServices
         _RespondedPeopleRepository = respondedPeopleRepository;
     }
 
-    public async Task<IBaseResponse> EditRespondedPeople(List<RespondedPeople> respondedPeoples)
+    public async Task<IBaseResponse> EditRespondedPeople(List<RespondedPeople> respondedPeople)
     {
         BaseResponse response;
 
-        var test = respondedPeoples[0].RequestId;
+        var requestId = respondedPeople[0].RequestId;
         // Находим старые RespondedPeople
         var tryDel = await _RespondedPeopleRepository
             .GetQueryable()
-            .Where(rp => rp.RequestId == test)
+            .Where(rp => rp.RequestId == requestId)
             .ToListAsync();
 
         if (tryDel != null)
@@ -32,8 +32,28 @@ public class RespondedPeopleServices : IRespondedPeopleServices
         }
 
         // Добавляем новые RespondedPeople
-        await _RespondedPeopleRepository.Create(respondedPeoples);
+        await _RespondedPeopleRepository.Create(respondedPeople);
 
+        // NoContent (204)
+        response = BaseResponse.NoContent("Successed");
+        return response;
+    }
+
+    public async Task<IBaseResponse> DeleteRespondedPeople(int requestId)
+    {
+        BaseResponse response;
+
+        // Находим старые RespondedPeople
+        var tryDel = await _RespondedPeopleRepository
+            .GetQueryable()
+            .Where(rp => rp.RequestId == requestId)
+            .ToListAsync();
+
+        if (tryDel != null)
+        {
+            // Удаляем старые RespondedPeople
+            await _RespondedPeopleRepository.Delete(tryDel);
+        }
         // NoContent (204)
         response = BaseResponse.NoContent("Successed");
         return response;
