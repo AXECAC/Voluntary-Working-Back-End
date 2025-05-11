@@ -60,6 +60,7 @@ CREATE TABLE public."Requests" (
     "DeadLine" timestamp with time zone NOT NULL,
     "PointNumber" integer NOT NULL,
     "NeededPeopleNumber" integer NOT NULL,
+    "TelegramUrl" text NOT NULL,
     "Description" text NOT NULL,
     "IsComplited" boolean NOT NULL,
     "IsFailed" boolean NOT NULL
@@ -139,7 +140,7 @@ COPY public."Images" ("Id", "RequestId", "Value") FROM stdin;
 -- Data for Name: Requests; Type: TABLE DATA; Schema: public; Owner: aragami
 --
 
-COPY public."Requests" ("Id", "AdminId", "Address", "Date", "DeadLine", "PointNumber", "NeededPeopleNumber", "Description", "IsComplited", "IsFailed") FROM stdin;
+COPY public."Requests" ("Id", "AdminId", "Address", "Date", "DeadLine", "PointNumber", "NeededPeopleNumber", "TelegramUrl", "Description", "IsComplited", "IsFailed") FROM stdin;
 \.
 
 

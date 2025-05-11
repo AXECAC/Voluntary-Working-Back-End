@@ -12,6 +12,7 @@ public class PrivateRequest
     public int PointNumber { get; set; }
     public int NeededPeopleNumber { get; set; }
     public List<int> RespondedPeople { get; set; }
+    public string TelegramUrl { get; set; }
     public string Description { get; set; }
     public bool IsComplited { get; set; }
     public bool IsFailed { get; set; }
@@ -28,6 +29,7 @@ public class PrivateRequest
         this.PointNumber = request.PointNumber;
         this.NeededPeopleNumber = request.NeededPeopleNumber;
         this.RespondedPeople = new List<int>(); // Обнуляем количество откликнувших
+        this.TelegramUrl = request.TelegramUrl;
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
         this.IsFailed = request.IsFailed;
@@ -43,6 +45,7 @@ public class PrivateRequest
         this.PointNumber = request.PointNumber;
         this.NeededPeopleNumber = request.NeededPeopleNumber;
         this.SetRespondedPeople(respondedPeople); // Устанавливаем UserId откликнувшихся User
+        this.TelegramUrl = request.TelegramUrl;
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
         this.IsFailed = request.IsFailed;

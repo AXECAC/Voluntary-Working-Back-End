@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using DataBase;
@@ -8,12 +9,17 @@ namespace Services;
 public class UserServices : IUserServices
 {
     private readonly IUserRepository _UserRepository;
+    private readonly IRequestRepository _RequestRepository;
+    private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly IHttpContextAccessor _HttpContextAccessor;
 
-    public UserServices(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
+    public UserServices(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository,
+            IRequestRepository requestRepository, IRespondedPeopleRepository respondedPeopleRepository)
     {
         _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         _UserRepository = userRepository;
+        _RequestRepository = requestRepository;
+        _RespondedPeopleRepository = respondedPeopleRepository;
     }
 
     public int GetMyId()
@@ -26,7 +32,6 @@ public class UserServices : IUserServices
         return _HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.Role).Value;
     }
 
-
     public async Task<IBaseResponse> CheckIdsValid(List<int> ids)
     {
         BaseResponse response;
@@ -35,6 +40,7 @@ public class UserServices : IUserServices
         for (int i = 0; i < ids.Count; i++)
         {
             tryFind = await _UserRepository.FirstOrDefaultAsync(x => x.Id == ids[i]);
+            // Если не нашли хотя бы один Id из списка
             if (tryFind == null)
             {
                 response = BaseResponse.NotFound("User id not found");
@@ -45,7 +51,6 @@ public class UserServices : IUserServices
         response = BaseResponse.NoContent();
         return response;
     }
-
 
     public async Task<IBaseResponse<User>> GetMyProfile()
     {
@@ -63,5 +68,53 @@ public class UserServices : IUserServices
 
         response = BaseResponse<User>.Ok(user);
         return response;
+    }
+
+    private async Task<List<CurrentRequest>> GetCurrentRequests(List<RespondedPeople> myResponse)
+    {
+        List<CurrentRequest> currentRequests = new List<CurrentRequest>();
+        for (int i = 0; i < myResponse.Count; ++i)
+        {
+            Request request = await _RequestRepository.FirstOrDefaultAsync(req => req.Id == myResponse[i].RequestId);
+
+            CurrentRequest currentRequest = new CurrentRequest(request);
+
+            currentRequests.Add(currentRequest);
+        }
+        return currentRequests;
+    }
+
+    // Получить Requsts, на которые я записался
+    public async Task<IBaseResponse<List<CurrentRequest>>> GetMyCurrentRequests()
+    {
+        BaseResponse<List<CurrentRequest>> response;
+
+        int myId = GetMyId();
+
+        // Ищем все запросы на которые откликнулся User
+        var myResponse = await _RespondedPeopleRepository
+            .GetQueryable()
+            .Where(rp => rp.UserId == myId)
+            .ToListAsync();
+
+        List<CurrentRequest> currentRequests = new List<CurrentRequest>();
+        if (myResponse != null && myResponse.Count > 0)
+        {
+            currentRequests = await GetCurrentRequests(myResponse);
+
+            if (currentRequests == null || currentRequests.Count == 0)
+            {
+                response = BaseResponse<List<CurrentRequest>>.NotFound();
+                return response;
+            }
+            else
+            {
+                response = BaseResponse<List<CurrentRequest>>.Ok(currentRequests);
+                return response;
+            }
+        }
+        response = BaseResponse<List<CurrentRequest>>.NotFound();
+        return response;
+
     }
 }

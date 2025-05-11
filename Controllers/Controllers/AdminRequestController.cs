@@ -329,6 +329,7 @@ namespace Controllers.AdminRequestController
             // Есть request
             if (response.StatusCode == DataBase.StatusCodes.NoContent)
             {
+                await _RespondedPeopleServices.DeleteRespondedPeople(id);
                 // Вернуть response 204
                 return NoContent();
             }
