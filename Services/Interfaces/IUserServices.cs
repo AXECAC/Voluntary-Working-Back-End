@@ -18,4 +18,7 @@ public interface IUserServices
 
     // Получить Requsts, на которые я записался
     Task<IBaseResponse<List<CurrentRequest>>> GetMyCurrentRequests();
+
+    // Поменять пароль
+    Task<IBaseResponse> ChangeMyPassword(string newPassword);
 }
