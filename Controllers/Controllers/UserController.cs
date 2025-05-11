@@ -52,7 +52,7 @@ namespace Controllers.UserController
             return Ok(response.Data);
         }
 
-        [HttpGet]
+        [HttpPut]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ChangeMyPassword(string newPassword)
