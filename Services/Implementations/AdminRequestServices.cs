@@ -481,6 +481,7 @@ public class AdminRequestServices : IAdminRequestServices
     {
         // Обнуляем значения
         request.Id = 0;
+        request.TelegramUrl = "Временно не доступен";
         request.IsFailed = false;
         request.IsComplited = false;
 
