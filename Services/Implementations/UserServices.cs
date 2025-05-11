@@ -84,4 +84,37 @@ public class UserServices : IUserServices
         return currentRequests;
     }
 
+    // Получить Requsts, на которые я записался
+    public async Task<IBaseResponse<List<CurrentRequest>>> GetMyCurrentRequests()
+    {
+        BaseResponse<List<CurrentRequest>> response;
+
+        int myId = GetMyId();
+
+        // Ищем все запросы на которые откликнулся User
+        var myResponse = await _RespondedPeopleRepository
+            .GetQueryable()
+            .Where(rp => rp.UserId == myId)
+            .ToListAsync();
+
+        List<CurrentRequest> currentRequests = new List<CurrentRequest>();
+        if (myResponse != null && myResponse.Count > 0)
+        {
+            currentRequests = await GetCurrentRequests(myResponse);
+
+            if (currentRequests == null || currentRequests.Count == 0)
+            {
+                response = BaseResponse<List<CurrentRequest>>.NotFound();
+                return response;
+            }
+            else
+            {
+                response = BaseResponse<List<CurrentRequest>>.Ok(currentRequests);
+                return response;
+            }
+        }
+        response = BaseResponse<List<CurrentRequest>>.NotFound();
+        return response;
+
+    }
 }
