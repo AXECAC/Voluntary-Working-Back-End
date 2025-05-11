@@ -144,4 +144,28 @@ public class UserServices : IUserServices
         return response;
     }
 
+    // Поменять Name, Group, TelegramUrl
+    public async Task<IBaseResponse> EditMyProfile(User editedUser)
+    {
+        BaseResponse response;
+
+        int myId = GetMyId();
+
+        var user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == myId);
+
+        if (user == null)
+        {
+            response = BaseResponse.NotFound("User not found");
+            return response;
+        }
+
+        user.Name = editedUser.Name;
+        user.Group = editedUser.Group;
+        user.TelegramUrl = editedUser.TelegramUrl;
+
+        await _UserRepository.Update(user);
+
+        response = BaseResponse.NoContent();
+        return response;
+    }
 }
