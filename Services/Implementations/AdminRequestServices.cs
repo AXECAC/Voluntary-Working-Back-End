@@ -629,6 +629,10 @@ public class AdminRequestServices : IAdminRequestServices
             return response;
         }
 
+        request.IsComplited = true;
+
+        await _RequestRepository.Update(request);
+
         return response;
     }
 }
