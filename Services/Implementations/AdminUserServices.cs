@@ -141,50 +141,48 @@ public class AdminUserServices : IAdminUserServices
         return baseResponse;
     }
 
-    public async Task<IBaseResponse> Edit(string oldEmail, User userEntity)
+    public async Task<IBaseResponse> Edit(string oldEmail, User user)
     {
         // Хэширование Password
-        userEntity = _HashingServices.Hashing(userEntity);
+        user = _HashingServices.Hashing(user);
 
         BaseResponse baseResponse;
         // Ищем User в кэше по Id
-        User? user = await _CachingServices.GetAsync(userEntity.Id);
+        User? userDB = await _CachingServices.GetAsync(user.Id);
 
-        if (user != null)
+        if (userDB != null)
         {
             // Удаляем старого User по Id
-            _CachingServices.RemoveAsync(user.Id.ToString());
+            _CachingServices.RemoveAsync(userDB.Id.ToString());
         }
         // Ищем User в кэше по oldEmail
-        user = await _CachingServices.GetAsync(oldEmail);
+        userDB = await _CachingServices.GetAsync(oldEmail);
 
-        if (user != null)
+        if (userDB != null)
         {
             // Удаляем старого User по oldEmail
             _CachingServices.RemoveAsync(oldEmail);
         }
         // Ищем User в БД
-        user = await _UserRepository.FirstOrDefaultAsync(x => x.Email == oldEmail);
+        userDB = await _UserRepository.FirstOrDefaultAsync(x => x.Email == oldEmail);
 
         // User not found (404)
-        if (user == null)
+        if (userDB == null)
         {
             baseResponse = BaseResponse.NotFound("User not found");
             return baseResponse;
         }
 
         // User found
-        user.Email = userEntity.Email;
-        user.Password = userEntity.Password;
-        user.Name = userEntity.Name;
-        user.Group = userEntity.Group;
-        user.TelegramUrl = userEntity.TelegramUrl;
+        userDB.Email = user.Email;
+        userDB.Points = user.Points;
+        userDB.FinishedRequests = user.FinishedRequests;
 
         // User edit (201)
-        await _UserRepository.Update(user);
+        await _UserRepository.Update(userDB);
 
         // Добавляем измененного User
-        _CachingServices.SetAsync(user, user.Id.ToString());
+        _CachingServices.SetAsync(userDB, userDB.Id.ToString());
 
         baseResponse = BaseResponse.Created();
         return baseResponse;
