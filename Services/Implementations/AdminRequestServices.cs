@@ -8,17 +8,14 @@ namespace Services;
 public class AdminRequestServices : IAdminRequestServices
 {
     private readonly IRequestRepository _RequestRepository;
-    private readonly IUserServices _UserServices;
     private readonly IUserRepository _UserRepository;
     private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly ICachingServices<Request> _CachingServices;
 
-    public AdminRequestServices(IRequestRepository requestRepository, IUserServices userServices,
-            IUserRepository userRepository, ICachingServices<Request> cachingServices,
-            IRespondedPeopleRepository respondedPeopleRepository)
+    public AdminRequestServices(IRequestRepository requestRepository, IUserRepository userRepository,
+            ICachingServices<Request> cachingServices, IRespondedPeopleRepository respondedPeopleRepository)
     {
         _RequestRepository = requestRepository;
-        _UserServices = userServices;
         _UserRepository = userRepository;
         _RespondedPeopleRepository = respondedPeopleRepository;
         _CachingServices = cachingServices;
@@ -604,6 +601,12 @@ public class AdminRequestServices : IAdminRequestServices
         if (request == null)
         {
             response = BaseResponse.NotFound("Request not found");
+            return response;
+        }
+
+        if (usersId.Count > request.NeededPeopleNumber)
+        {
+            response = BaseResponse.UnprocessableContent("Number of Ids is more than necessary");
             return response;
         }
 
