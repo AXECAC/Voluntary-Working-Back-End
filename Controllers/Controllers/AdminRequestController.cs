@@ -343,5 +343,46 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
+        [HttpPut]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> MarkAsCompleted(int requestId, List<int> usersId)
+        {
+            // Проверка request на валидность
+            if (requestId < 0)
+            {
+                return UnprocessableEntity();
+            }
+            var response = await _UserServices.CheckIdsValid(usersId);
+
+            // Не существует как минимум одного User из Id откликнувшихся
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+
+            response = await _AdminRequestServices.MarkAsCompleted(requestId, usersId);
+            
+            if (response.StatusCode == DataBase.StatusCodes.BadRequest)
+            {
+                // Вернуть response (400)
+                return BadRequest();
+            }
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+            if (response.StatusCode == DataBase.StatusCodes.UnprocessableContent)
+            {
+                // Вернуть response (422)
+                return UnprocessableEntity();
+            }
+            // Вернуть response (204)
+            return NoContent();
+        }
     }
 }
