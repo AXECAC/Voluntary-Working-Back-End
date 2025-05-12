@@ -594,4 +594,38 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
 
+    // Отметить Request как выполненый и зачислить баллы всем User из usersId
+    public async Task<IBaseResponse> MarkAsCompleted(int requestId, List<int> usersId)
+    {
+        IBaseResponse response;
+
+        var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
+
+        if (request == null)
+        {
+            response = BaseResponse.NotFound("Request not found");
+            return response;
+        }
+
+        if (request.IsComplited == true)
+        {
+            response = BaseResponse.BadRequest("Request is already Completed");
+            return response;
+        }
+
+        if (request.IsFailed == true)
+        {
+            response = BaseResponse.BadRequest("Request is already Failed");
+            return response;
+        }
+
+        response = await PointsPerRequest(request.PointNumber, usersId);
+
+        if (response.StatusCode == DataBase.StatusCodes.NotFound)
+        {
+            return response;
+        }
+
+        return response;
+    }
 }
