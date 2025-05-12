@@ -8,13 +8,18 @@ namespace Services;
 public class AdminRequestServices : IAdminRequestServices
 {
     private readonly IRequestRepository _RequestRepository;
+    private readonly IUserServices _UserServices;
+    private readonly IUserRepository _UserRepository;
     private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly ICachingServices<Request> _CachingServices;
 
-    public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices,
+    public AdminRequestServices(IRequestRepository requestRepository, IUserServices userServices,
+            IUserRepository userRepository, ICachingServices<Request> cachingServices,
             IRespondedPeopleRepository respondedPeopleRepository)
     {
         _RequestRepository = requestRepository;
+        _UserServices = userServices;
+        _UserRepository = userRepository;
         _RespondedPeopleRepository = respondedPeopleRepository;
         _CachingServices = cachingServices;
     }
@@ -559,4 +564,34 @@ public class AdminRequestServices : IAdminRequestServices
         response = BaseResponse.Created("Request edit");
         return response;
     }
+
+    private async Task<IBaseResponse> PointsPerRequest(int points, List<int> usersId)
+    {
+        BaseResponse response;
+
+        List<User> users = new List<User>();
+
+        User user;
+        for (int i = 0; i < usersId.Count; i++)
+        {
+            user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == usersId[i]);
+
+            if (user == null)
+            {
+                response = BaseResponse.NotFound("User is not found");
+                return response;
+            }
+
+            user.Points += points;
+        }
+
+        for (int i = 0; i < users.Count; i++)
+        {
+            await _UserRepository.Update(users[i]);
+        }
+        response = BaseResponse.NoContent();
+        return response;
+    }
+
+
 }
