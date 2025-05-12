@@ -101,6 +101,16 @@ public class BaseResponse<T> : IBaseResponse<T>
         };
     }
 
+    // Генерация UnprocessableContent response (42)
+    public static BaseResponse<T> UnprocessableContent(string description = "")
+    {
+        return new BaseResponse<T>()
+        {
+            StatusCode = StatusCodes.UnprocessableContent,
+            Description = description,
+        };
+    }
+
     // Генерация InternalServerError response (500)
     public static BaseResponse<T> InternalServerError(string description = "")
     {
@@ -186,6 +196,16 @@ public class BaseResponse : IBaseResponse
         return new BaseResponse()
         {
             StatusCode = StatusCodes.Conflict,
+            Description = description,
+        };
+    }
+
+    // Генерация UnprocessableContent response (42)
+    public static BaseResponse UnprocessableContent(string description = "")
+    {
+        return new BaseResponse()
+        {
+            StatusCode = StatusCodes.UnprocessableContent,
             Description = description,
         };
     }

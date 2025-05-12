@@ -272,7 +272,7 @@ namespace Controllers.AdminRequestController
         {
             Request crRequest = request.ToRequest();
             // Проверка request на валидность
-            if (!crRequest.IsValid() || !(crRequest.NeededPeopleNumber >= request.RespondedPeople.Count)
+            if (!crRequest.IsValid() || !(crRequest.NeededPeopleNumber > request.RespondedPeople.Count)
                     || (request.RespondedPeople.Exists(x => x < 1)))
             {
                 return UnprocessableEntity();
@@ -282,9 +282,9 @@ namespace Controllers.AdminRequestController
 
             var response = await _UserServices.CheckIdsValid(request.RespondedPeople);
 
+            // Не существует как минимум одного User из Id откликнувшихся
             if (response.StatusCode == DataBase.StatusCodes.NotFound)
             {
-                // Нет одного из Id откликнувшихся
                 // Вернуть response (404)
                 return NotFound();
             }
@@ -299,10 +299,13 @@ namespace Controllers.AdminRequestController
             if (response.StatusCode == DataBase.StatusCodes.Created)
             {
                 // Меняем RespondedPeople
-                List<RespondedPeople> respondedPeoples = new List<RespondedPeople>();
-                respondedPeoples.Generate(request.RespondedPeople, request.Id);
+                if (request.RespondedPeople.Count > 0)
+                {
+                    List<RespondedPeople> respondedPeoples = new List<RespondedPeople>();
+                    respondedPeoples.Generate(request.RespondedPeople, request.Id);
 
-                response = await _RespondedPeopleServices.EditRespondedPeople(respondedPeoples);
+                    response = await _RespondedPeopleServices.EditRespondedPeople(respondedPeoples);
+                }
 
                 // Вернуть response 200
                 return CreatedAtAction(nameof(crRequest), "Successed");
@@ -312,6 +315,7 @@ namespace Controllers.AdminRequestController
             // Вернуть response (404)
             return NotFound();
         }
+
         [HttpDelete]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
@@ -337,6 +341,48 @@ namespace Controllers.AdminRequestController
             // Нет request
             // Вернуть response (404)
             return NotFound();
+        }
+
+        [HttpPut]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> MarkAsCompleted(int requestId, List<int> usersId)
+        {
+            // Проверка request на валидность
+            if (requestId < 0)
+            {
+                return UnprocessableEntity();
+            }
+            var response = await _UserServices.CheckIdsValid(usersId);
+
+            // Не существует как минимум одного User из Id откликнувшихся
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+
+            response = await _AdminRequestServices.MarkAsCompleted(requestId, usersId);
+            
+            if (response.StatusCode == DataBase.StatusCodes.BadRequest)
+            {
+                // Вернуть response (400)
+                return BadRequest();
+            }
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+            if (response.StatusCode == DataBase.StatusCodes.UnprocessableContent)
+            {
+                // Вернуть response (422)
+                return UnprocessableEntity();
+            }
+            // Вернуть response (204)
+            return NoContent();
         }
     }
 }

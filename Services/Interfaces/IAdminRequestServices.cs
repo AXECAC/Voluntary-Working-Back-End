@@ -45,4 +45,7 @@ public interface IAdminRequestServices
 
     // Изменить Request
     Task<IBaseResponse> EditRequest(Request request);
+
+    // Отметить Request как выполненый и зачислить баллы всем User из usersId
+    Task<IBaseResponse> MarkAsCompleted(int requestId, List<int> usersId);
 }

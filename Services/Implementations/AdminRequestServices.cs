@@ -8,13 +8,15 @@ namespace Services;
 public class AdminRequestServices : IAdminRequestServices
 {
     private readonly IRequestRepository _RequestRepository;
+    private readonly IUserRepository _UserRepository;
     private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly ICachingServices<Request> _CachingServices;
 
-    public AdminRequestServices(IRequestRepository requestRepository, ICachingServices<Request> cachingServices,
-            IRespondedPeopleRepository respondedPeopleRepository)
+    public AdminRequestServices(IRequestRepository requestRepository, IUserRepository userRepository,
+            ICachingServices<Request> cachingServices, IRespondedPeopleRepository respondedPeopleRepository)
     {
         _RequestRepository = requestRepository;
+        _UserRepository = userRepository;
         _RespondedPeopleRepository = respondedPeopleRepository;
         _CachingServices = cachingServices;
     }
@@ -557,6 +559,80 @@ public class AdminRequestServices : IAdminRequestServices
         await _RequestRepository.Update(request);
         // NoContent (201)
         response = BaseResponse.Created("Request edit");
+        return response;
+    }
+
+    private async Task<IBaseResponse> PointsPerRequest(int points, List<int> usersId)
+    {
+        BaseResponse response;
+
+        List<User> users = new List<User>();
+
+        User user;
+        for (int i = 0; i < usersId.Count; i++)
+        {
+            user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == usersId[i]);
+
+            if (user == null)
+            {
+                response = BaseResponse.NotFound("User is not found");
+                return response;
+            }
+
+            user.Points += points;
+        }
+
+        for (int i = 0; i < users.Count; i++)
+        {
+            await _UserRepository.Update(users[i]);
+        }
+        response = BaseResponse.NoContent();
+        return response;
+    }
+
+
+    // Отметить Request как выполненый и зачислить баллы всем User из usersId
+    public async Task<IBaseResponse> MarkAsCompleted(int requestId, List<int> usersId)
+    {
+        IBaseResponse response;
+
+        var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
+
+        if (request == null)
+        {
+            response = BaseResponse.NotFound("Request not found");
+            return response;
+        }
+
+        if (usersId.Count > request.NeededPeopleNumber)
+        {
+            response = BaseResponse.UnprocessableContent("Number of Ids is more than necessary");
+            return response;
+        }
+
+        if (request.IsComplited == true)
+        {
+            response = BaseResponse.BadRequest("Request is already Completed");
+            return response;
+        }
+
+        if (request.IsFailed == true)
+        {
+            response = BaseResponse.BadRequest("Request is already Failed");
+            return response;
+        }
+
+        response = await PointsPerRequest(request.PointNumber, usersId);
+
+        if (response.StatusCode == DataBase.StatusCodes.NotFound)
+        {
+            return response;
+        }
+
+        request.IsComplited = true;
+
+        await _RequestRepository.Update(request);
+
         return response;
     }
 }
