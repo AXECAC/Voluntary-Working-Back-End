@@ -1,57 +1,71 @@
 services:
-  db:
-    container_name: postgresVoluntaryWorking
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: aragami
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: voluntarydb
-    ports:
-      - "5432:5432"
-    networks:
-      custom_network:
-        ipv4_address: 10.100.0.2  # Static IP address for the db service
-    volumes:
-      - postgres_data:/data/postgres
+    db:
+        container_name: postgresVoluntaryWorking
+        image: postgres:latest
+        restart: always
+        environment:
+            POSTGRES_USER: aragami
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: voluntarydb
+        ports:
+            - "5432:5432"
+        networks:
+            custom_network:
+                ipv4_address: 10.100.0.2  # Static IP address for the db service
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+            - ./db:/sql  # Монтируем SQL-скрипт
 
-  pgadmin:
-    container_name: pgadmin4VoluntaryWorking
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: pgadmin
-    ports:
-      - "80:80"
-    networks:
-      custom_network:
-        ipv4_address: 10.100.0.3  # Static IP address for the db service
-    volumes:
-       - pgadmin:/var/lib/pgadmin
-  redis:
-    container_name: redisVoluntaryWorking
-    image: docker.io/bitnami/redis:7.4
-    environment:
-      # ALLOW_EMPTY_PASSWORD is recommended only for development.
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    ports:
-      - '6379:6379'
-    volumes:
-      - 'redis_data:/bitnami/redis/data'
-    networks:
-      custom_network:
-        ipv4_address: 10.100.0.4
+    cron:
+        image: alpine:latest
+        depends_on:
+            - db
+        networks:
+            - custom_network
+        volumes:
+            - ./cron/crontab:/etc/crontabs/root  # Монтируем файл cron
+            - ./db:/sql                          # Монтируем SQL-скрипт
+        command: sh -c "apk add --no-cache postgresql-client && crond -f -L /dev/stdout"
+
+    pgadmin:
+        container_name: pgadmin4VoluntaryWorking
+        image: dpage/pgadmin4
+        restart: always
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: pgadmin
+        ports:
+            - "80:80"
+        networks:
+            custom_network:
+                ipv4_address: 10.100.0.3  # Static IP address for the db service
+        volumes:
+            - pgadmin:/var/lib/pgadmin
+
+    redis:
+        container_name: redisVoluntaryWorking
+        image: docker.io/bitnami/redis:7.4
+        environment:
+            # ALLOW_EMPTY_PASSWORD is recommended only for development.
+            - ALLOW_EMPTY_PASSWORD=yes
+            - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+        ports:
+            - '6379:6379'
+        volumes:
+            - 'redis_data:/bitnami/redis/data'
+        networks:
+            custom_network:
+                ipv4_address: 10.100.0.4
 
 volumes:
-  redis_data:
-    driver: local
-  pgadmin:
-  postgres_data:
+    redis_data:
+        driver: local
+    pgadmin:
+    postgres_data:
+
 networks:
-  custom_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.100.0.0/16  # Define subnet to include your chosen IP
+    custom_network:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.100.0.0/16  # Define subnet to include your chosen IP
