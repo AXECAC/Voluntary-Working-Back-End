@@ -56,8 +56,9 @@ public class RequestLogServices : IRequestLogServices
         return new RequestLog(
                 int.Parse(parts[0]),
                 int.Parse(parts[1]),
-                RemoveEscaping(parts[2]),
-                DateTime.Parse(parts[3])
+                int.Parse(parts[2]),
+                RemoveEscaping(parts[3]),
+                DateTime.Parse(parts[4])
         );
     }
 
@@ -66,14 +67,14 @@ public class RequestLogServices : IRequestLogServices
     {
         if (!File.Exists(pathToLog))
         {
-            return new RequestLog(0, 0, "");
+            return new RequestLog(0, 0, 0, "");
         }
 
         string lastLine = File.ReadLines(pathToLog).LastOrDefault();
 
         if (string.IsNullOrEmpty(lastLine))
         {
-            return new RequestLog(0, 0, "");
+            return new RequestLog(0, 0, 0, "");
         }
 
         return ParseLogLine(lastLine);
@@ -92,7 +93,7 @@ public class RequestLogServices : IRequestLogServices
 
         EnsureFileExist(pathToLog);
 
-        string newLog = $"{log.Id}, {log.RequestId}, {AddEscaping(log.Action)}, {log.Date:O}";
+        string newLog = $"{log.Id}, {log.AdminId}, {log.RequestId}, {AddEscaping(log.Action)}, {log.Date:O}";
 
         File.AppendAllText(pathToLog, newLog + Environment.NewLine);
     }
