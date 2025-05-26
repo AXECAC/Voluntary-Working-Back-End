@@ -1,2 +1,2 @@
-# Запускать каждый месяц, 1-го числа, в 3:00
-0 3 1 * * psql -h db -U aragami -d voluntarydb -f /sql/clean_old_posts.sql > /proc/1/fd/1 2>&1
+*/1 * * * * echo "[SUPERCRONIC-TEST] $(date)" >> /var/log/cron.log
+*/1 * * * * PGPASSWORD=password pg_dump -h db -U aragami -d voluntarydb -Fc > /sql/backups/voluntarydb_$(date +\%Y-\%m-\%d_\%H-\%M-\%S).dump 2>> /var/log/cron.log
