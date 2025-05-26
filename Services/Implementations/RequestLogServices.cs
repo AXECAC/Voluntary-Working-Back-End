@@ -1,6 +1,6 @@
 namespace Services;
 
-// Class RequestLogServices
+// Класс RequestLogServices
 public class RequestLogServices : IRequestLogServices
 {
     private readonly string LogsDir = "RequestLogs";
@@ -20,11 +20,8 @@ public class RequestLogServices : IRequestLogServices
         }
     }
 
-    private void EnsureFileExist(int requestId)
+    private void EnsureFileExist(string pathToLog)
     {
-        string fileName = TemplateLogFileName + requestId.ToString() + ".log";
-        string pathToLog = Path.Combine(LogsDir, fileName);
-
         // Создаем файл, если его нет
         if (!File.Exists(pathToLog))
         {
@@ -32,9 +29,28 @@ public class RequestLogServices : IRequestLogServices
         }
     }
 
+    private static string AddEscaping(string text)
+    {
+        return text?.Replace(",", "\\,");
+    }
+
+    private static string RemoveEscaping(string text)
+    {
+        return text?.Replace("\\,", ",");
+    }
+
+
+
     public void AppendLogToFile(RequestLog log)
     {
-        EnsureFileExist(log.RequestId);
+        // Путь до файла
+        string fileName = TemplateLogFileName + log.RequestId.ToString() + ".log";
+        string pathToLog = Path.Combine(LogsDir, fileName);
 
+        EnsureFileExist(pathToLog);
+
+        string newLog = $"{log.Id}, {log.RequestId}, {AddEscaping(log.Action)}, {log.Date:O}";
+
+        File.AppendAllText(pathToLog, newLog + Environment.NewLine);
     }
 }

@@ -1,6 +1,6 @@
 namespace Services;
 
-// Class RequestLog
+// Класс RequestLog
 public class RequestLog
 {
     public int Id { get; set; }
