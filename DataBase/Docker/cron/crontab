@@ -1,2 +1,3 @@
 * * * * * echo "[SUPERCRONIC-TEST] $(date)" >> /var/log/cron.log
-* * * * * /backup.sh
+* * * * * /scripts/backup.sh
+* * * * * /scripts/cleanup_script.sh
