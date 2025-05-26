@@ -20,7 +20,7 @@ public class RequestLogServices : IRequestLogServices
         }
     }
 
-    private void EnsureFileExist(string pathToLog)
+    private static void EnsureFileExist(string pathToLog)
     {
         // Создаем файл, если его нет
         if (!File.Exists(pathToLog))
@@ -51,7 +51,7 @@ public class RequestLogServices : IRequestLogServices
         );
     }
 
-    private RequestLog ReadLastLogFromFile(string pathToLog)
+    private static RequestLog ReadLastLogFromFile(string pathToLog)
     {
         if (!File.Exists(pathToLog))
         {
@@ -84,5 +84,23 @@ public class RequestLogServices : IRequestLogServices
         string newLog = $"{log.Id}, {log.RequestId}, {AddEscaping(log.Action)}, {log.Date:O}";
 
         File.AppendAllText(pathToLog, newLog + Environment.NewLine);
+    }
+
+
+    public List<RequestLog> ReadAllLogsFromFile(int requestId)
+    {
+        // Путь до файла
+        string fileName = TemplateLogFileName + requestId.ToString() + ".log";
+        string pathToLog = Path.Combine(LogsDir, fileName);
+
+        if (!File.Exists(pathToLog))
+        {
+            return new List<RequestLog>();
+        }
+
+        return File.ReadAllLines(pathToLog)
+            .Where(line => !string.IsNullOrEmpty(line))
+            .Select(ParseLogLine)
+            .ToList();
     }
 }
