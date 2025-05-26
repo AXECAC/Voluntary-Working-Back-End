@@ -19,4 +19,13 @@ public class SaveImageServices
             Directory.CreateDirectory(ImagesDir);
         }
     }
+
+    private string CreatePathToImage(int requestId)
+    {
+        // Путь до файла
+        string fileName = TemplateImageFileName + requestId.ToString() + Guid.NewGuid().ToString() + ".log";
+        string pathToImage = Path.Combine(ImagesDir, fileName);
+
+        return pathToImage;
+    }
 }
