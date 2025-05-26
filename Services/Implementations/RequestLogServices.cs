@@ -3,6 +3,7 @@ namespace Services;
 // Класс RequestLogServices
 public class RequestLogServices : IRequestLogServices
 {
+    // Путь до директории с логами каждого Request
     private readonly string LogsDir = "RequestLogs";
     private readonly string TemplateLogFileName = "request";
 
@@ -11,18 +12,18 @@ public class RequestLogServices : IRequestLogServices
         EnsureDirectoryExist();
     }
 
+    // Создаем директорию, если ее нет
     private void EnsureDirectoryExist()
     {
-        // Создаем директорию, если ее нет
         if (!Directory.Exists(LogsDir))
         {
             Directory.CreateDirectory(LogsDir);
         }
     }
 
+    // Создаем файл, если его нет
     private static void EnsureFileExist(string pathToLog)
     {
-        // Создаем файл, если его нет
         if (!File.Exists(pathToLog))
         {
             File.Create(pathToLog).Close(); // Закрываем поток после создания
@@ -51,6 +52,7 @@ public class RequestLogServices : IRequestLogServices
         );
     }
 
+    // Получить последний RequestLog данного Request
     private static RequestLog ReadLastLogFromFile(string pathToLog)
     {
         if (!File.Exists(pathToLog))
@@ -68,6 +70,7 @@ public class RequestLogServices : IRequestLogServices
         return ParseLogLine(lastLine);
     }
 
+    // Добавить RequestLog последней строкой
     public void AppendLogToFile(RequestLog log)
     {
         // Путь до файла
@@ -86,7 +89,7 @@ public class RequestLogServices : IRequestLogServices
         File.AppendAllText(pathToLog, newLog + Environment.NewLine);
     }
 
-
+    // Получить все RequestLog данного Request
     public List<RequestLog> ReadAllLogsFromFile(int requestId)
     {
         // Путь до файла
@@ -102,5 +105,17 @@ public class RequestLogServices : IRequestLogServices
             .Where(line => !string.IsNullOrEmpty(line))
             .Select(ParseLogLine)
             .ToList();
+    }
+
+    public void DeleteLogFile(int requestId)
+    {
+        // Путь до файла
+        string fileName = TemplateLogFileName + requestId.ToString() + ".log";
+        string pathToLog = Path.Combine(LogsDir, fileName);
+
+        if (File.Exists(pathToLog))
+        {
+            File.Delete(pathToLog);
+        }
     }
 }

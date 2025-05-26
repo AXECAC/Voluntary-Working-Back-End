@@ -8,4 +8,7 @@ public interface IRequestLogServices
 
     // Получить все RequestLog данного Request
     List<RequestLog> ReadAllLogsFromFile(int requestId);
+
+    // Удалить логи Request по его Id
+    void DeleteLogFile(int requestId);
 }
