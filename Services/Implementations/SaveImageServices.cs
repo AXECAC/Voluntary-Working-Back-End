@@ -9,5 +9,14 @@ public class SaveImageServices
 
     public SaveImageServices()
     {
+        EnsureDirectoryExist();
+    }
+    // Создаем директорию, если ее нет
+    private void EnsureDirectoryExist()
+    {
+        if (!Directory.Exists(ImagesDir))
+        {
+            Directory.CreateDirectory(ImagesDir);
+        }
     }
 }
