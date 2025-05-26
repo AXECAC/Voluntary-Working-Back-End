@@ -11,14 +11,17 @@ public class AdminRequestServices : IAdminRequestServices
     private readonly IUserRepository _UserRepository;
     private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
     private readonly ICachingServices<Request> _CachingServices;
+    private readonly IRequestLogServices _RequestLogServices;
 
     public AdminRequestServices(IRequestRepository requestRepository, IUserRepository userRepository,
-            ICachingServices<Request> cachingServices, IRespondedPeopleRepository respondedPeopleRepository)
+            ICachingServices<Request> cachingServices, IRespondedPeopleRepository respondedPeopleRepository,
+            IRequestLogServices requestLogServices)
     {
         _RequestRepository = requestRepository;
         _UserRepository = userRepository;
         _RespondedPeopleRepository = respondedPeopleRepository;
         _CachingServices = cachingServices;
+        _RequestLogServices = requestLogServices;
     }
 
     // Получить все Requests
@@ -489,8 +492,19 @@ public class AdminRequestServices : IAdminRequestServices
 
         await _RequestRepository.Create(request);
 
+        int requestId = await _RequestRepository
+            .GetQueryable()
+            .Where(req => req.AdminId == request.AdminId)
+            .OrderBy(req => req.Id)
+            .Select(req => req.Id)
+            .LastOrDefaultAsync();
+
+        
+        RequestLog log = new RequestLog(0, request.AdminId, requestId, $"Request created");
+
+        _RequestLogServices.AppendLogToFile(log);
         // Создаем Request
-        var response = BaseResponse.Created("Request created");
+        var response = BaseResponse.Created($"Request{requestId} created");
         return response;
     }
 
@@ -518,6 +532,10 @@ public class AdminRequestServices : IAdminRequestServices
         }
 
         await _RequestRepository.Delete(request);
+
+        RequestLog log = new RequestLog(0, request.AdminId, request.Id, $"Request deleted");
+
+        _RequestLogServices.AppendLogToFile(log);
         // NoContent (204)
         response = BaseResponse.NoContent();
         return response;
@@ -546,7 +564,7 @@ public class AdminRequestServices : IAdminRequestServices
             return response;
         }
 
-        request.AdminId = request.AdminId;
+        request.AdminId = newRequest.AdminId;
         request.Address = newRequest.Address;
         request.Date = newRequest.Date;
         request.DeadLine = newRequest.DeadLine;
@@ -557,6 +575,11 @@ public class AdminRequestServices : IAdminRequestServices
         // Добавляем измененного Request
         _CachingServices.SetAsync(request, request.Id.ToString());
         await _RequestRepository.Update(request);
+
+
+        RequestLog log = new RequestLog(0, request.AdminId, request.Id, $"Request Edited: Adress to {request.Address}; Date to {request.Date}; DeadLine to {request.DeadLine}; PointNumber to {request.PointNumber}; NeededPeopleNumber to {request.NeededPeopleNumber}; Description to {request.Description}");
+
+        _RequestLogServices.AppendLogToFile(log);
         // NoContent (201)
         response = BaseResponse.Created("Request edit");
         return response;
@@ -633,6 +656,9 @@ public class AdminRequestServices : IAdminRequestServices
 
         await _RequestRepository.Update(request);
 
+        RequestLog log = new RequestLog(0, request.AdminId, request.Id, $"Request MarkAsCompleted");
+
+        _RequestLogServices.AppendLogToFile(log);
         return response;
     }
 }
