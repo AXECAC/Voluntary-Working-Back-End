@@ -26,12 +26,10 @@ services:
             - ./backups:/sql/backups
             - ./cron/logs:/var/log
             - ./cron/crontab:/etc/crontabs/crontab
+            - ./db/backup.sh:/backup.sh
         command: >
             sh -c "
             apk add --no-cache postgresql-client supercronic bash &&
-            echo '#!/bin/bash' > /backup.sh &&
-            echo 'current_date=\$$(date +\\%Y-\\%m-\\%d_\\%H-\\%M-\\%S)' >> /backup.sh &&
-            echo 'PGPASSWORD=password pg_dump -h db -U aragami -d voluntarydb -Fc > /sql/backups/voluntarydb_\$${current_date}.dump 2>> /var/log/cron.log' >> /backup.sh &&
             chmod +x /backup.sh &&
             cat /etc/crontabs/crontab > /etc/crontabs/root &&
             chmod 0644 /etc/crontabs/root &&
