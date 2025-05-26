@@ -272,7 +272,7 @@ namespace Controllers.AdminRequestController
         {
             Request crRequest = request.ToRequest();
             // Проверка request на валидность
-            if (!crRequest.IsValid() || !(crRequest.NeededPeopleNumber > request.RespondedPeople.Count)
+            if (!crRequest.IsValid() || !(crRequest.NeededPeopleNumber >= request.RespondedPeople.Count)
                     || (request.RespondedPeople.Exists(x => x < 1)))
             {
                 return UnprocessableEntity();
