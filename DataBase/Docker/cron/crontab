@@ -1,4 +1,5 @@
 # Каждый день в 00:00
 0 0 * * * echo "[SUPERCRONIC-TEST] $(date)" >> /var/log/cron.log
 0 0 * * * /scripts/backup.sh
-0 0 * * * /scripts/cleanup_script.sh
+0 0 * * * /scripts/cleanup_Requests.sh
+0 0 * * * /scripts/cleanup_backups.sh
