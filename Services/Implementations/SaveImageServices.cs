@@ -21,10 +21,10 @@ public class SaveImageServices
         }
     }
 
-    private string CreatePathToImage(int requestId)
+    private string CreatePathToImage(int requestId, string imageExtension)
     {
         // Путь до файла
-        string fileName = TemplateImageFileName + requestId.ToString() + Guid.NewGuid().ToString() + ".log";
+        string fileName = TemplateImageFileName + requestId.ToString() + Guid.NewGuid().ToString() + imageExtension;
         string pathToImage = Path.Combine(ImagesDir, fileName);
 
         return pathToImage;
