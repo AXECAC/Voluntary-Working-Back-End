@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 namespace Services;
 
 // Class SaveImageServices
@@ -27,5 +28,18 @@ public class SaveImageServices
         string pathToImage = Path.Combine(ImagesDir, fileName);
 
         return pathToImage;
+    }
+
+    private string GetImageExtension(IFormFile image)
+    {
+        var imageExtension = Path.GetExtension(image.FileName).ToLowerInvariant();
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+
+        if (!allowedExtensions.Contains(imageExtension))
+        {
+            return "BadExtension";
+        }
+
+        return imageExtension;
     }
 }
