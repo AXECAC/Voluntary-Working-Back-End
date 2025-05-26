@@ -39,13 +39,45 @@ public class RequestLogServices : IRequestLogServices
         return text?.Replace("\\,", ",");
     }
 
+    // string => RequestLog
+    private static RequestLog ParseLogLine(string logLine)
+    {
+        var parts = logLine.Split(",");
+        return new RequestLog(
+                int.Parse(parts[0]),
+                int.Parse(parts[1]),
+                RemoveEscaping(parts[2]),
+                DateTime.Parse(parts[3])
+        );
+    }
 
+    private RequestLog ReadLastLogFromFile(string pathToLog)
+    {
+        if (!File.Exists(pathToLog))
+        {
+            return new RequestLog(0, 0, "");
+        }
+
+        string lastLine = File.ReadLines(pathToLog).LastOrDefault();
+
+        if (string.IsNullOrEmpty(lastLine))
+        {
+            return new RequestLog(0, 0, "");
+        }
+
+        return ParseLogLine(lastLine);
+    }
 
     public void AppendLogToFile(RequestLog log)
     {
         // Путь до файла
         string fileName = TemplateLogFileName + log.RequestId.ToString() + ".log";
         string pathToLog = Path.Combine(LogsDir, fileName);
+
+        // Находим последний log Id
+        RequestLog lastLog = ReadLastLogFromFile(pathToLog);
+        // Задаем новый log Id для новой записи
+        log.Id = lastLog.Id + 1;
 
         EnsureFileExist(pathToLog);
 
