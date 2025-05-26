@@ -104,6 +104,7 @@ builder.Services.AddSingleton<IUserServices, UserServices>();
 
 builder.Services.AddSingleton<ITokenServices, TokenServices>();
 builder.Services.AddSingleton<IHashingServices, HashingServices>();
+builder.Services.AddSingleton<IRequestLogServices, RequestLogServices>();
 builder.Services.AddSingleton<ICachingServices<User>, CachingServices<User>>();
 builder.Services.AddSingleton<ICachingServices<PublicRequest>, CachingServices<PublicRequest>>();
 builder.Services.AddSingleton<ICachingServices<Request>, CachingServices<Request>>();
