@@ -40,6 +40,15 @@ public class RequestLogServices : IRequestLogServices
         return text?.Replace("\\,", ",");
     }
 
+    private string CreatePathToLog(int requestId)
+    {
+        // Путь до файла
+        string fileName = TemplateLogFileName + requestId.ToString() + ".log";
+        string pathToLog = Path.Combine(LogsDir, fileName);
+
+        return pathToLog;
+    }
+
     // string => RequestLog
     private static RequestLog ParseLogLine(string logLine)
     {
@@ -74,8 +83,7 @@ public class RequestLogServices : IRequestLogServices
     public void AppendLogToFile(RequestLog log)
     {
         // Путь до файла
-        string fileName = TemplateLogFileName + log.RequestId.ToString() + ".log";
-        string pathToLog = Path.Combine(LogsDir, fileName);
+        string pathToLog = CreatePathToLog(log.RequestId);
 
         // Находим последний log Id
         RequestLog lastLog = ReadLastLogFromFile(pathToLog);
@@ -93,8 +101,7 @@ public class RequestLogServices : IRequestLogServices
     public List<RequestLog> ReadAllLogsFromFile(int requestId)
     {
         // Путь до файла
-        string fileName = TemplateLogFileName + requestId.ToString() + ".log";
-        string pathToLog = Path.Combine(LogsDir, fileName);
+        string pathToLog = CreatePathToLog(requestId);
 
         if (!File.Exists(pathToLog))
         {
@@ -110,8 +117,7 @@ public class RequestLogServices : IRequestLogServices
     public void DeleteLogFile(int requestId)
     {
         // Путь до файла
-        string fileName = TemplateLogFileName + requestId.ToString() + ".log";
-        string pathToLog = Path.Combine(LogsDir, fileName);
+        string pathToLog = CreatePathToLog(requestId);
 
         if (File.Exists(pathToLog))
         {
