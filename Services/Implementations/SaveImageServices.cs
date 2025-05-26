@@ -42,4 +42,23 @@ public class SaveImageServices
 
         return imageExtension;
     }
+
+    public async Task<string> SaveImage(IFormFile image, int requestId)
+    {
+        var imageExtension = GetImageExtension(image);
+
+        if (imageExtension == "BadExtension")
+        {
+            return "Bad Extension Error";
+        }
+
+        var pathToImage = CreatePathToImage(requestId, imageExtension);
+
+        using (var stream = new FileStream(pathToImage, FileMode.Create))
+        {
+            await image.CopyToAsync(stream);
+        }
+
+        return pathToImage;
+    }
 }
