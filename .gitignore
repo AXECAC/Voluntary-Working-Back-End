@@ -2,5 +2,7 @@ bin/
 obj/
 .vs/
 *.user
+*.dump
+*.log
 tags
 RequestLogs/
