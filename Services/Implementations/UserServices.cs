@@ -1,191 +1,171 @@
-using Context;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using DataBase;
-using Services.Caching;
+using Context;
 namespace Services;
 
 // Класс UserServices
 public class UserServices : IUserServices
 {
     private readonly IUserRepository _UserRepository;
+    private readonly IRequestRepository _RequestRepository;
     private readonly IHashingServices _HashingServices;
-    private readonly ICachingServices<User> _CachingServices;
+    private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
+    private readonly IHttpContextAccessor _HttpContextAccessor;
 
-
-    public UserServices(IUserRepository userRepository, IHashingServices hashingServices, ICachingServices<User> cachingServices)
+    public UserServices(IHttpContextAccessor httpContextAccessor, IHashingServices hashingServices,
+            IUserRepository userRepository, IRequestRepository requestRepository,
+            IRespondedPeopleRepository respondedPeopleRepository)
     {
-        _UserRepository = userRepository;
+        _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         _HashingServices = hashingServices;
-        _CachingServices = cachingServices;
+        _UserRepository = userRepository;
+        _RequestRepository = requestRepository;
+        _RespondedPeopleRepository = respondedPeopleRepository;
     }
 
-    public async Task<IBaseResponse<IEnumerable<User>>> GetUsers()
+    public int GetMyId()
     {
-        BaseResponse<IEnumerable<User>> baseResponse;
-        // Ищем всех User в БД
-        var users = await _UserRepository.Select();
-
-        // in future try !users.Any()
-        // Ok (204) but 0 elements
-        if (users.Count == 0)
-        {
-            baseResponse = BaseResponse<IEnumerable<User>>.NoContent("Find 0 elements");
-            return baseResponse;
-        }
-
-        // Ok (200)
-        baseResponse = BaseResponse<IEnumerable<User>>.Ok(users);
-        return baseResponse;
+        return Convert.ToInt32(_HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.NameIdentifier).Value);
     }
 
-    public async Task<IBaseResponse<User>> GetUser(int id)
+    public string GetMyRole()
     {
-        BaseResponse<User> baseResponse;
-        // Ищем User в кэше
-        User? user = await _CachingServices.GetAsync(id);
-
-        if (user == null)
-        {
-            // Ищем User в БД
-            user = await _UserRepository.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        // NotFound (404)
-        if (user == null)
-        {
-            baseResponse = BaseResponse<User>.NotFound("User not found");
-            return baseResponse;
-        }
-        // Found - Ok (200)
-        // Добавляем User в кэш
-        _CachingServices.SetAsync(user, user.Id.ToString());
-        baseResponse = BaseResponse<User>.Ok(user, "User found");
-        return baseResponse;
+        return _HttpContextAccessor.HttpContext.User.Claims.First(i => i.Type == ClaimTypes.Role).Value;
     }
 
-    public async Task<IBaseResponse> CreateUser(User userEntity)
+    public async Task<IBaseResponse> CheckIdsValid(List<int> ids)
     {
-        // Хэширование Password
-        userEntity = _HashingServices.Hashing(userEntity);
-        userEntity.Role = "Student";
-        userEntity.Points = 0;
-        userEntity.FinishedRequests = 0;
-        userEntity.CurrentRequests = [];
-        // Создаем User
-        await _UserRepository.Create(userEntity);
-        var baseResponse = BaseResponse.Created("User created");
-        return baseResponse;
-    }
+        BaseResponse response;
 
-    public async Task<IBaseResponse> DeleteUser(int id)
-    {
-        BaseResponse baseResponse;
-
-        // Ищем User в кэше по Id
-
-        User? user = await _CachingServices.GetAsync(id);
-        // User есть в кэше
-        if (user != null)
+        User tryFind;
+        for (int i = 0; i < ids.Count; i++)
         {
-            // Удаляем User из кеша по Id
-
-            _CachingServices.RemoveAsync(user.Id.ToString());
-        }
-        // Ищем User в БД
-        user = await _UserRepository.FirstOrDefaultAsync(x => x.Id == id);
-
-        // Ищем User в кэше по Email
-        if (user != null)
-        {
-            var userInCache = await _CachingServices.GetAsync(user.Email);
-            // User есть в кэше
-            if (userInCache != null)
+            tryFind = await _UserRepository.FirstOrDefaultAsync(x => x.Id == ids[i]);
+            // Если не нашли хотя бы один Id из списка
+            if (tryFind == null)
             {
-                // Удаляем User из кеша по Email
-                _CachingServices.RemoveAsync(userInCache.Email);
+                response = BaseResponse.NotFound("User id not found");
+                return response;
             }
         }
-        // User не найден (404)
-        if (user == null)
-        {
-            baseResponse = BaseResponse.NotFound("User not found");
-            return baseResponse;
-        }
-        // User Найден (204)
-        await _UserRepository.Delete(user);
-        baseResponse = BaseResponse.NoContent();
-        return baseResponse;
+
+        response = BaseResponse.NoContent();
+        return response;
     }
 
-    public async Task<IBaseResponse<User>> GetUserByEmail(string email)
+    public async Task<IBaseResponse<User>> GetMyProfile()
     {
-        BaseResponse<User> baseResponse;
-        // Ищем User в кэше
-        User? user = await _CachingServices.GetAsync(email);
+        BaseResponse<User> response;
+
+        int myId = GetMyId();
+
+        var user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == myId);
 
         if (user == null)
         {
-            // Ищем User в БД
-            user = await _UserRepository.FirstOrDefaultAsync(x => x.Email == email);
-        }
-        // User not found (404)
-        if (user == null)
-        {
-            baseResponse = BaseResponse<User>.NotFound("User not found");
-            return baseResponse;
+            response = BaseResponse<User>.NotFound("User not found");
+            return response;
         }
 
-        // User found (200)
-        // Добавляем User в кэш
-        _CachingServices.SetAsync(user, user.Email);
-        baseResponse = BaseResponse<User>.Ok(user);
-        return baseResponse;
+        response = BaseResponse<User>.Ok(user);
+        return response;
     }
 
-    public async Task<IBaseResponse> Edit(string oldEmail, User userEntity)
+    private async Task<List<CurrentRequest>> GetCurrentRequests(List<RespondedPeople> myResponse)
     {
-        // Хэширование Password
-        userEntity = _HashingServices.Hashing(userEntity);
-
-        BaseResponse baseResponse;
-        // Ищем User в кэше по Id
-        User? user = await _CachingServices.GetAsync(userEntity.Id);
-
-        if (user != null)
+        List<CurrentRequest> currentRequests = new List<CurrentRequest>();
+        for (int i = 0; i < myResponse.Count; ++i)
         {
-            // Удаляем старого User по Id
-            _CachingServices.RemoveAsync(user.Id.ToString());
-        }
-        // Ищем User в кэше по oldEmail
-        user = await _CachingServices.GetAsync(oldEmail);
+            Request request = await _RequestRepository.FirstOrDefaultAsync(req => req.Id == myResponse[i].RequestId);
 
-        if (user != null)
+            CurrentRequest currentRequest = new CurrentRequest(request);
+
+            currentRequests.Add(currentRequest);
+        }
+        return currentRequests;
+    }
+
+    // Получить Requsts, на которые я записался
+    public async Task<IBaseResponse<List<CurrentRequest>>> GetMyCurrentRequests()
+    {
+        BaseResponse<List<CurrentRequest>> response;
+
+        int myId = GetMyId();
+
+        // Ищем все запросы на которые откликнулся User
+        var myResponse = await _RespondedPeopleRepository
+            .GetQueryable()
+            .Where(rp => rp.UserId == myId)
+            .ToListAsync();
+
+        List<CurrentRequest> currentRequests = new List<CurrentRequest>();
+        if (myResponse != null && myResponse.Count > 0)
         {
-            // Удаляем старого User по oldEmail
-            _CachingServices.RemoveAsync(oldEmail);
-        }
-        // Ищем User в БД
-        user = await _UserRepository.FirstOrDefaultAsync(x => x.Email == oldEmail);
+            currentRequests = await GetCurrentRequests(myResponse);
 
-        // User not found (404)
+            if (currentRequests == null || currentRequests.Count == 0)
+            {
+                response = BaseResponse<List<CurrentRequest>>.NotFound();
+                return response;
+            }
+            else
+            {
+                response = BaseResponse<List<CurrentRequest>>.Ok(currentRequests);
+                return response;
+            }
+        }
+        response = BaseResponse<List<CurrentRequest>>.NotFound();
+        return response;
+    }
+
+    // Поменять пароль
+    public async Task<IBaseResponse> ChangeMyPassword(string newPassword)
+    {
+        BaseResponse response;
+
+        int myId = GetMyId();
+
+        var user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == myId);
+
         if (user == null)
         {
-            baseResponse = BaseResponse.NotFound("User not found");
-            return baseResponse;
+            response = BaseResponse.NotFound("User not found");
+            return response;
         }
 
-        // User found
-        user.Email = userEntity.Email;
-        user.Password = userEntity.Password;
-        user.Name = userEntity.Name;
-        user.Group = userEntity.Group;
+        user.Password = newPassword;
+        _HashingServices.Hashing(user);
 
-        // User edit (201)
         await _UserRepository.Update(user);
 
-        // Добавляем измененного User
-        _CachingServices.SetAsync(user, user.Id.ToString());
+        response = BaseResponse.NoContent();
+        return response;
+    }
 
-        baseResponse = BaseResponse.Created();
-        return baseResponse;
+    // Поменять Name, Group, TelegramUrl
+    public async Task<IBaseResponse> EditMyProfile(User editedUser)
+    {
+        BaseResponse response;
+
+        int myId = GetMyId();
+
+        var user = await _UserRepository.FirstOrDefaultAsync(us => us.Id == myId);
+
+        if (user == null)
+        {
+            response = BaseResponse.NotFound("User not found");
+            return response;
+        }
+
+        user.Name = editedUser.Name;
+        user.Group = editedUser.Group;
+        user.TelegramUrl = editedUser.TelegramUrl;
+
+        await _UserRepository.Update(user);
+
+        response = BaseResponse.NoContent();
+        return response;
     }
 }

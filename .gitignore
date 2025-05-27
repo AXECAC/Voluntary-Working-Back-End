@@ -4,3 +4,5 @@ obj/
 *.user
 *.dump
 *.log
+tags
+RequestLogs/

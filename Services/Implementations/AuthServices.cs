@@ -30,10 +30,10 @@ public class AuthServices : IAuthServices
         // Новый User
         if (userDb == null)
         {
+            user.Id = 0;
             user.Role = "Student";
             user.Points = 0;
             user.FinishedRequests = 0;
-            user.CurrentRequests = [];
             // Создать новый User
             await _UserRepository.Create(user);
             // Created (201)

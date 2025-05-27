@@ -62,6 +62,16 @@ public class BaseResponse<T> : IBaseResponse<T>
     }
 
     // Генерация Unauthorized response (401)
+    public static BaseResponse<T> BadRequest(string description = "")
+    {
+        return new BaseResponse<T>()
+        {
+            StatusCode = StatusCodes.BadRequest,
+            Description = description,
+        };
+    }
+
+    // Генерация Unauthorized response (401)
     public static BaseResponse<T> Unauthorized(string description = "")
     {
         return new BaseResponse<T>()
@@ -87,6 +97,16 @@ public class BaseResponse<T> : IBaseResponse<T>
         return new BaseResponse<T>()
         {
             StatusCode = StatusCodes.Conflict,
+            Description = description,
+        };
+    }
+
+    // Генерация UnprocessableContent response (42)
+    public static BaseResponse<T> UnprocessableContent(string description = "")
+    {
+        return new BaseResponse<T>()
+        {
+            StatusCode = StatusCodes.UnprocessableContent,
             Description = description,
         };
     }
@@ -140,6 +160,16 @@ public class BaseResponse : IBaseResponse
         };
     }
 
+    // Генерация Unauthorized response (400)
+    public static BaseResponse BadRequest(string description = "")
+    {
+        return new BaseResponse()
+        {
+            StatusCode = StatusCodes.BadRequest,
+            Description = description,
+        };
+    }
+
     // Генерация Unauthorized response (401)
     public static BaseResponse Unauthorized(string description = "")
     {
@@ -166,6 +196,16 @@ public class BaseResponse : IBaseResponse
         return new BaseResponse()
         {
             StatusCode = StatusCodes.Conflict,
+            Description = description,
+        };
+    }
+
+    // Генерация UnprocessableContent response (42)
+    public static BaseResponse UnprocessableContent(string description = "")
+    {
+        return new BaseResponse()
+        {
+            StatusCode = StatusCodes.UnprocessableContent,
             Description = description,
         };
     }

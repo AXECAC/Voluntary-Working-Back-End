@@ -4,15 +4,24 @@ namespace Services;
 // Интерфейс IUserServices
 public interface IUserServices
 {
-    Task<IBaseResponse<IEnumerable<User>>> GetUsers();
+    // Получить Id из jwt
+    int GetMyId();
 
-    Task<IBaseResponse<User>> GetUser(int id);
+    // Получить Role из jwt
+    string GetMyRole();
 
-    Task<IBaseResponse> CreateUser(User userEntity);
+    // Проверить Id людей (есть ли люди с такими ids)
+    Task<IBaseResponse> CheckIdsValid(List<int> ids);
 
-    Task<IBaseResponse> DeleteUser(int id);
+    // Получить мои данные
+    Task<IBaseResponse<User>> GetMyProfile();
 
-    Task<IBaseResponse<User>> GetUserByEmail(string email);
+    // Получить Requsts, на которые я записался
+    Task<IBaseResponse<List<CurrentRequest>>> GetMyCurrentRequests();
 
-    Task<IBaseResponse> Edit(string oldEmail, User userEntity);
+    // Поменять пароль
+    Task<IBaseResponse> ChangeMyPassword(string newPassword);
+
+    // Поменять Name, Group, TelegramUrl
+    Task<IBaseResponse> EditMyProfile(User editedUser);
 }

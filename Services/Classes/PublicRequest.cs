@@ -22,8 +22,39 @@ public class PublicRequest
         this.DeadLine = request.DeadLine;
         this.PointNumber = request.PointNumber;
         this.NeededPeopleNumber = request.NeededPeopleNumber;
-        this.RespondedPeople = request.RespondedPeople.Count();
+        this.RespondedPeople = 0; // Обнуляем количество откликнувших
         this.Description = request.Description;
         this.IsComplited = request.IsComplited;
+    }
+
+    public PublicRequest(Request request, List<RespondedPeople> respondedPeople)
+    {
+        this.Id = request.Id;
+        this.Address = request.Address;
+        this.Date = request.Date;
+        this.DeadLine = request.DeadLine;
+        this.PointNumber = request.PointNumber;
+        this.NeededPeopleNumber = request.NeededPeopleNumber;
+        this.SetRespondedPeople(respondedPeople); // Устанавливаем количество откликнувшихся User
+        this.Description = request.Description;
+        this.IsComplited = request.IsComplited;
+    }
+
+    // Устанавливаем количество откликнувшихся User
+    public void SetRespondedPeople(List<RespondedPeople> respondedPeople)
+    {
+        // Обнуляем
+        this.RespondedPeople = 0;
+        // Считаем
+        for (int i = 0; i < respondedPeople.Count; ++i)
+        {
+            // Если Id PublicRequest и RequestId совпадают
+            if (this.Id == respondedPeople[i].RequestId)
+            {
+                // Увеличиваем количество людей
+                this.RespondedPeople += 1;
+            }
+        }
+
     }
 }

@@ -15,13 +15,16 @@ namespace Controllers.AdminRequestController
     // AdminRequestController класс контроллер
     public class AdminRequestController : Controller
     {
-        private readonly IAdminUserServices _AdminUserServices;
+        private readonly IUserServices _UserServices;
         private readonly IAdminRequestServices _AdminRequestServices;
+        private readonly IRespondedPeopleServices _RespondedPeopleServices;
 
-        public AdminRequestController(IAdminUserServices adminUserServices, IAdminRequestServices adminRequestServices)
+        public AdminRequestController(IUserServices userServices, IAdminRequestServices adminRequestServices,
+                IRespondedPeopleServices respondedPeopleServices)
         {
-            _AdminUserServices = adminUserServices;
+            _UserServices = userServices;
             _AdminRequestServices = adminRequestServices;
+            _RespondedPeopleServices = respondedPeopleServices;
         }
 
         // AdminFeed --- лента админов
@@ -242,53 +245,77 @@ namespace Controllers.AdminRequestController
         [HttpPost]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> CreateRequest(Request request)
+        public async Task<IActionResult> CreateRequest(PrivateRequest request)
         {
+            Request crRequest = request.ToRequest();
             // Проверка request на валидность
-            if (!request.IsValid())
+            if (!crRequest.IsValid())
             {
                 return UnprocessableEntity();
             }
 
             // Задаем Id админа/Dev-а создавашего это запрос
-            request.AdminId = _AdminUserServices.GetAdminId();
+            crRequest.AdminId = _UserServices.GetMyId();
 
             // Создаем Request
-            await _AdminRequestServices.CreateRequest(request);
+            await _AdminRequestServices.CreateRequest(crRequest);
 
             // Return response 200
-            return CreatedAtAction(nameof(request), "Successed");
+            return CreatedAtAction(nameof(crRequest), "Successed");
         }
 
         [HttpPut]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> EditRequest(Request request)
+        public async Task<IActionResult> EditRequest(PrivateRequest request)
         {
+            Request crRequest = request.ToRequest();
             // Проверка request на валидность
-            if (!request.IsValid())
+            if (!crRequest.IsValid() || !(crRequest.NeededPeopleNumber >= request.RespondedPeople.Count)
+                    || (request.RespondedPeople.Exists(x => x < 1)))
             {
                 return UnprocessableEntity();
             }
 
+            request.RespondedPeople.Distinct();
+
+            var response = await _UserServices.CheckIdsValid(request.RespondedPeople);
+
+            // Не существует как минимум одного User из Id откликнувшихся
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+
             // Задаем Id админа/Dev-а изменившего это запрос
-            request.AdminId = _AdminUserServices.GetAdminId();
+            crRequest.AdminId = _UserServices.GetMyId();
 
             // Меняем Request
-            var response = await _AdminRequestServices.EditRequest(request);
+            response = await _AdminRequestServices.EditRequest(crRequest);
 
             // Получилось изменить
             if (response.StatusCode == DataBase.StatusCodes.Created)
             {
+                // Меняем RespondedPeople
+                if (request.RespondedPeople.Count > 0)
+                {
+                    List<RespondedPeople> respondedPeoples = new List<RespondedPeople>();
+                    respondedPeoples.Generate(request.RespondedPeople, request.Id);
+
+                    response = await _RespondedPeopleServices.EditRespondedPeople(respondedPeoples);
+                }
+
                 // Вернуть response 200
-                return CreatedAtAction(nameof(request), "Successed");
+                return CreatedAtAction(nameof(crRequest), "Successed");
             }
 
             // Нет такого запроса
             // Вернуть response (404)
             return NotFound();
         }
+
         [HttpDelete]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
@@ -306,6 +333,7 @@ namespace Controllers.AdminRequestController
             // Есть request
             if (response.StatusCode == DataBase.StatusCodes.NoContent)
             {
+                await _RespondedPeopleServices.DeleteRespondedPeople(id);
                 // Вернуть response 204
                 return NoContent();
             }
@@ -313,6 +341,48 @@ namespace Controllers.AdminRequestController
             // Нет request
             // Вернуть response (404)
             return NotFound();
+        }
+
+        [HttpPut]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
+        public async Task<IActionResult> MarkAsCompleted(int requestId, List<int> usersId)
+        {
+            // Проверка request на валидность
+            if (requestId < 0)
+            {
+                return UnprocessableEntity();
+            }
+            var response = await _UserServices.CheckIdsValid(usersId);
+
+            // Не существует как минимум одного User из Id откликнувшихся
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+
+            response = await _AdminRequestServices.MarkAsCompleted(requestId, usersId);
+            
+            if (response.StatusCode == DataBase.StatusCodes.BadRequest)
+            {
+                // Вернуть response (400)
+                return BadRequest();
+            }
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                // Вернуть response (404)
+                return NotFound();
+            }
+            if (response.StatusCode == DataBase.StatusCodes.UnprocessableContent)
+            {
+                // Вернуть response (422)
+                return UnprocessableEntity();
+            }
+            // Вернуть response (204)
+            return NoContent();
         }
     }
 }

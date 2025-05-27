@@ -10,8 +10,7 @@ public static class RequestExtentions
     {
         if (request.Id < 0 || request.AdminId < 0 || request.Address == "" ||
                 !request.Date.IsValidDate(request.DeadLine) || !request.PointNumber.IsValidPointNumber() ||
-                request.NeededPeopleNumber < 0 || !request.RespondedPeople.IsValidRespondedPeople() ||
-                request.Description == "")
+                request.NeededPeopleNumber < 0 || request.Description == "")
         {
             return false;
         }
@@ -29,14 +28,6 @@ public static class RequestExtentions
     // Валидация поля сущности Request: PointNumber
     private static bool IsValidPointNumber(this int pointNumber){
         if(pointNumber < 1 || pointNumber > 3){
-            return false;
-        }
-        return true;
-    }
-
-    // Валидация поля сущности Request: RespondedPeople
-    private static bool IsValidRespondedPeople(this int[] RespondedPeople){
-        if (RespondedPeople == null){
             return false;
         }
         return true;
