@@ -26,5 +26,6 @@ public class VoluntaryWorkingDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Request> Requests { get; set; }
     public DbSet<RespondedPeople> RespondedPeoples { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Image> Images { get; set; }
 }
