@@ -13,12 +13,15 @@ namespace Controllers.AuthController
     {
         private readonly IAuthServices _AuthServices;
         private readonly IUserServices _UserServices;
+        private readonly ITokenServices _TokenServices;
         private readonly string? _secretKey;
 
-        public AuthController(IAuthServices authServices, IUserServices userServices, IConfiguration configuration)
+        public AuthController(IAuthServices authServices, IUserServices userServices,
+                ITokenServices tokenServices, IConfiguration configuration)
         {
             _AuthServices = authServices;
             _UserServices = userServices;
+            _TokenServices = tokenServices;
             _secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
 
@@ -49,7 +52,7 @@ namespace Controllers.AuthController
             if (response.StatusCode == DataBase.StatusCodes.Created)
             {
                 // Вернуть токен (201)
-                return CreatedAtAction(nameof(user), new { response.Data });
+                return CreatedAtAction(nameof(Tokens), response.Data);
             }
             // Такой email уже существует
             else
@@ -86,12 +89,12 @@ namespace Controllers.AuthController
             if (response.StatusCode == DataBase.StatusCodes.Ok)
             {
                 // Вернуть токен (200)
-                return Ok(new { response.Data });
+                return Ok(response.Data);
             }
             // неправильные Email или Password 
             else
             {
-                // Вернуть Conflict (401)
+                // Вернуть Unauthorized (401)
                 return Unauthorized();
             }
 
@@ -101,12 +104,44 @@ namespace Controllers.AuthController
         [Authorize]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized)]
-        // Проверить токен (на валидность, не является ли он старым)(максимум 3 часа жизни)
+        // Проверить токен (на валидность, не является ли он старым)(максимум 5 минут жизни)
         public IActionResult Check()
         {
             var role = _UserServices.GetMyRole();
             // Токен валидный, а иначе вернуть Unauthorized
             return Ok(new {data = role});
+        }
+
+        [HttpGet]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RefreshTokens(string oldRefreshToken)
+        {
+            var response = await _TokenServices.RefreshToken(oldRefreshToken, _secretKey);
+
+            if (response.StatusCode == DataBase.StatusCodes.NotFound)
+            {
+                return NotFound();
+            }
+            // Вернуть токен (200)
+            return Ok(response.Data);
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
+        [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Revoke()
+        {
+            int userId = _UserServices.GetMyId();
+
+            var response = await _TokenServices.DeleteRefreshToken(userId);
+
+            if (response.StatusCode == DataBase.StatusCodes.NoContent)
+            {
+                return NoContent();
+            }
+            return Ok();
         }
     }
 }
