@@ -7,8 +7,8 @@ public class HashingServices : IHashingServices
 {
     private static string HashFunc(string input)
     {
-        var md5 = MD5.Create();
-        var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
+        var sha512 = SHA512.Create();
+        var hash = sha512.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
         return Convert.ToBase64String(hash);
     }
 
