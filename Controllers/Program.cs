@@ -98,6 +98,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IRequestRepository, RequestRepository>();
 builder.Services.AddSingleton<IRespondedPeopleRepository, RespondedPeopleRepository>();
+builder.Services.AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>();
 
 builder.Services.AddSingleton<IAuthServices, AuthServices>();
 builder.Services.AddSingleton<IUserServices, UserServices>();
