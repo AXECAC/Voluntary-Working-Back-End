@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Context;
 using DataBase;
 namespace Services;
@@ -51,24 +52,27 @@ public class AuthServices : IAuthServices
 
     public async Task<IBaseResponse<Tokens>> TryLogin(LoginUser form, string secretKey)
     {
-        // Хэширование Password
-        User user = _HashingServices.Hashing(form);
-
+        
         BaseResponse<Tokens> baseResponse;
         // Найти user по email
-        var userDb = await _UserRepository.FirstOrDefaultAsync(x => x.Email == user.Email);
+        var userDb = await _UserRepository.FirstOrDefaultAsync(x => x.Email == form.Email);
+
+        // Подсчет времени затраченного на проверку пароля
+        var passwordVerifyTime = Stopwatch.StartNew();
 
         // User существует
         if (userDb != null)
         {
             // Сравнить хэш пароля
-            if (user.Password == userDb.Password)
+            if (_HashingServices.Verify(form.Password, userDb.Password))
             {
+                passwordVerifyTime.Stop();
                 // Ok (200)
                 baseResponse = BaseResponse<Tokens>.Ok(data: await _TokenServices.GenerateJWTToken(userDb, secretKey));
             }
             else
             {
+                passwordVerifyTime.Stop();
                 // Unauthorized (401)
                 baseResponse = BaseResponse<Tokens>.Unauthorized("Bad password");
             }
@@ -76,8 +80,22 @@ public class AuthServices : IAuthServices
         // User не существует
         else
         {
+            // Фиктивная проверка
+            _HashingServices.Verify(form.Password);
+
+            passwordVerifyTime.Stop();
             // Unauthorized (401)
             baseResponse = BaseResponse<Tokens>.Unauthorized("Email not found");
+        }
+
+
+        // Создаем фиксированную задержку в 250 мс
+        // Смотрим сколько осталось подождать до 250 мс
+        var remainigDelay = TimeSpan.FromMilliseconds(250) - passwordVerifyTime.Elapsed;
+        // Ждем оставшееся время
+        if(remainigDelay > TimeSpan.Zero)
+        {
+            await Task.Delay(remainigDelay);
         }
         return baseResponse;
     }

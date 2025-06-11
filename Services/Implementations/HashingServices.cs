@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using DataBase;
 namespace Services;
 
@@ -7,22 +6,23 @@ public class HashingServices : IHashingServices
 {
     private static string HashFunc(string input)
     {
-        var md5 = MD5.Create();
-        var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
-        return Convert.ToBase64String(hash);
+        var hash = BCrypt.Net.BCrypt.HashPassword(input);
+        return hash;
+    }
+
+    public bool Verify(string password, string hash)
+    {
+        return BCrypt.Net.BCrypt.Verify(password, hash);
+    }
+
+    public bool Verify(string password)
+    {
+        return BCrypt.Net.BCrypt.Verify(password, BCrypt.Net.BCrypt.GenerateSalt());
     }
 
     public User Hashing(User user)
     {
         user.Password = HashFunc(user.Password);
-        return user;
-    }
-
-    public User Hashing(LoginUser loginUser)
-    {
-        User user = new User();
-        user.Email = loginUser.Email;
-        user.Password = HashFunc(loginUser.Password);
         return user;
     }
 }

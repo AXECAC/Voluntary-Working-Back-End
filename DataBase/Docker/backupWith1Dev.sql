@@ -191,7 +191,7 @@ COPY public."RespondedPeoples" ("UserId", "RequestId") FROM stdin;
 --
 
 COPY public."Users" ("Id", "Email", "Password", "Name", "TelegramUrl", "Role", "Group", "Points", "FinishedRequests") FROM stdin;
-1	aragami@gmail.com	/OW3fQaDGZV7QZY5jyJ0Tg==	Smirnov Egor	@aragami3070	Dev	251 PI	0	0
+1	aragami@gmail.com	$2a$11$N./CCrK96Frj4mPOfdfymeF9rIYTuw3KJynLjc0krsQBkFx17NMmS	Smirnov Egor	@aragami3070	Dev	251 PI	0	0
 \.
 
 
