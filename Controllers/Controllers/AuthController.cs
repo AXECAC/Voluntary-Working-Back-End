@@ -119,6 +119,10 @@ namespace Controllers.AuthController
         {
             var response = await _TokenServices.RefreshToken(oldRefreshToken, _secretKey);
 
+            if (response.StatusCode == DataBase.StatusCodes.BadRequest)
+            {
+                return BadRequest();
+            }
             if (response.StatusCode == DataBase.StatusCodes.NotFound)
             {
                 return NotFound();

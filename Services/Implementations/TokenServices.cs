@@ -11,7 +11,7 @@ public class TokenServices : ITokenServices
 {
     private readonly IRefreshTokenRepository _RefreshTokenRepository;
     private readonly int accessTokenTime = 5;
-    private readonly int refreshTokenTime = 1440;
+    private readonly int refreshTokenTime = 5;
 
     public TokenServices(IRefreshTokenRepository refreshTokenRepository)
     {
@@ -47,25 +47,22 @@ public class TokenServices : ITokenServices
 
     public async Task<IBaseResponse<Tokens>> RefreshToken(string oldRefreshToken, string secretKey)
     {
-        BaseResponse<Tokens> response;
+        BaseResponse<Tokens> response = ValidateRefreshToken(oldRefreshToken, secretKey);
 
-        ValidateRefreshToken(oldRefreshToken, secretKey);
-
-        Tokens jwtToken = new Tokens();
+        // Если oldRefreshToken невалидный
+        if (response.StatusCode == StatusCodes.BadRequest)
+        {
+            return response;
+        }
 
         var oldToken = new JwtSecurityTokenHandler().ReadJwtToken(oldRefreshToken);
-
         User user = new User();
-
         // Заполняем user на основе данных из oldRefreshToken
         user.Id = Convert.ToInt32(oldToken.Claims.First(
                     claim => claim.Type == JwtRegisteredClaimNames.Sub
                     ).Value);
         user.Name = Convert.ToString(oldToken.Claims.First(
                     claim => claim.Type == JwtRegisteredClaimNames.Name
-                    ).Value);
-        user.Email = Convert.ToString(oldToken.Claims.First(
-                    claim => claim.Type == JwtRegisteredClaimNames.Email
                     ).Value);
         user.Role = Convert.ToString(oldToken.Claims.First(
                     claim => claim.Type == ClaimTypes.Role
@@ -79,47 +76,34 @@ public class TokenServices : ITokenServices
             response = BaseResponse<Tokens>.NotFound();
             return response;
         }
+
         var oldTokenDB = new JwtSecurityTokenHandler().ReadJwtToken(oldRefreshDB.Token);
+
 
         // Оставляем старый refreshToken, или в случае просрока заменим далее
         string refreshToken = oldRefreshDB.Token;
-
-        bool tokenExpired = false;
-
-        var createDate = DateTimeOffset.FromUnixTimeSeconds(
-                Convert.ToInt64(
-                    oldTokenDB.Claims.First(
-                        claim => claim.Type == JwtRegisteredClaimNames.Exp
-                        ).Value
-                    )
-                ).DateTime;
-
-        if (DateTime.Now >= createDate)
+        if (response.Description == "Token expired")
         {
             // Удаляем oldRefreshToken, если тот истек
             await _RefreshTokenRepository.Delete(oldRefreshDB);
             // Пересоздаем oldRefreshToken, если тот истек
             refreshToken = GenerateRefreshToken(user, secretKey);
 
-            tokenExpired = true;
+            RefreshToken saveRefreshToken = new RefreshToken
+            {
+                Id = user.Id,
+                Token = refreshToken
+            };
+            // Сохраняем новый refreshToken в бд
+            await _RefreshTokenRepository.Create(saveRefreshToken);
         }
 
         string accessToken = GenerateAccessToken(user, secretKey);
-
-
-        jwtToken.AccessToken = accessToken;
-        jwtToken.RefreshToken = refreshToken;
-
-        RefreshToken saveRefreshToken = new RefreshToken();
-        saveRefreshToken.Id = user.Id;
-        saveRefreshToken.Token = refreshToken;
-
-        // Сохраняем новый refreshToken в бд
-        if (tokenExpired)
+        response = BaseResponse<Tokens>.Ok(new Tokens
         {
-            await _RefreshTokenRepository.Create(saveRefreshToken);
-        }
-        response = BaseResponse<Tokens>.Ok(jwtToken);
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        });
         return response;
     }
 
@@ -160,8 +144,8 @@ public class TokenServices : ITokenServices
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-                issuer: "yourdomain.com",
-                audience: "yourdomain.com",
+                issuer: "axecac-kek.ru",
+                audience: "axecac-kek.ru",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(time),
                 signingCredentials: creds);
@@ -175,7 +159,6 @@ public class TokenServices : ITokenServices
         {
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email,  user.Email),
             new Claim(ClaimTypes.Role, user.Role),
         };
         return claims;
@@ -187,14 +170,13 @@ public class TokenServices : ITokenServices
         {
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email,  user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.Role, user.Role),
         };
         return claims;
     }
 
-    private void ValidateRefreshToken(string token, string secretKey)
+    private BaseResponse<Tokens> ValidateRefreshToken(string token, string secretKey)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
@@ -205,9 +187,20 @@ public class TokenServices : ITokenServices
             ValidateAudience = false,
             ClockSkew = TimeSpan.Zero
         };
-
-        // Проверка подписи JWT, если токен не верный будет исключение
-        tokenHandler.ValidateToken(token, validationParameters, out _);
+        try
+        {
+            // Проверка подписи JWT, если токен не верный будет исключение
+            tokenHandler.ValidateToken(token, validationParameters, out _);
+            return BaseResponse<Tokens>.Ok();
+        }
+        catch (SecurityTokenExpiredException ex)
+        {
+            return BaseResponse<Tokens>.Ok(description: "Token expired");
+        }
+        catch (SecurityTokenException ex)
+        {
+            return BaseResponse<Tokens>.BadRequest(description: "Tokens not valid");
+        }
     }
 
 }
