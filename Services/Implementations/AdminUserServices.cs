@@ -69,7 +69,6 @@ public class AdminUserServices : IAdminUserServices
         userEntity.Role = "Student";
         userEntity.Points = 0;
         userEntity.FinishedRequests = 0;
-        // userEntity.CurrentRequests.Clear();
         // Создаем User
         await _UserRepository.Create(userEntity);
         var baseResponse = BaseResponse.Created("User created");
