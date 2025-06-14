@@ -17,7 +17,7 @@ public class AdminUserServices : IAdminUserServices
         _CachingServices = cachingServices;
     }
 
-    public async Task<IBaseResponse<IEnumerable<User>>> GetUsers()
+    public async Task<IBaseResponse<IEnumerable<User>>> Get()
     {
         BaseResponse<IEnumerable<User>> baseResponse;
         // Ищем всех User в БД
@@ -36,7 +36,7 @@ public class AdminUserServices : IAdminUserServices
         return baseResponse;
     }
 
-    public async Task<IBaseResponse<User>> GetUser(int id)
+    public async Task<IBaseResponse<User>> Get(int id)
     {
         BaseResponse<User> baseResponse;
         // Ищем User в кэше
@@ -61,7 +61,7 @@ public class AdminUserServices : IAdminUserServices
         return baseResponse;
     }
 
-    public async Task<IBaseResponse> CreateUser(User userEntity)
+    public async Task<IBaseResponse> Create(User userEntity)
     {
         // Хэширование Password
         userEntity = _HashingServices.Hashing(userEntity);
@@ -75,7 +75,7 @@ public class AdminUserServices : IAdminUserServices
         return baseResponse;
     }
 
-    public async Task<IBaseResponse> DeleteUser(int id)
+    public async Task<IBaseResponse> Delete(int id)
     {
         BaseResponse baseResponse;
 
@@ -115,7 +115,7 @@ public class AdminUserServices : IAdminUserServices
         return baseResponse;
     }
 
-    public async Task<IBaseResponse<User>> GetUserByEmail(string email)
+    public async Task<IBaseResponse<User>> GetByEmail(string email)
     {
         BaseResponse<User> baseResponse;
         // Ищем User в кэше
@@ -140,7 +140,7 @@ public class AdminUserServices : IAdminUserServices
         return baseResponse;
     }
 
-    public async Task<IBaseResponse> Edit(string oldEmail, User user)
+    public async Task<IBaseResponse> Update(string oldEmail, User user)
     {
         // Хэширование Password
         user = _HashingServices.Hashing(user);
@@ -177,7 +177,7 @@ public class AdminUserServices : IAdminUserServices
         userDB.Points = user.Points;
         userDB.FinishedRequests = user.FinishedRequests;
 
-        // User edit (201)
+        // User Update (201)
         await _UserRepository.Update(userDB);
 
         // Добавляем измененного User

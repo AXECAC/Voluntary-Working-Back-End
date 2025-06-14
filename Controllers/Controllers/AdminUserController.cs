@@ -28,7 +28,7 @@ namespace Controllers.AdminUserController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetUsers()
         {
-            var response = await _AdminUserServices.GetUsers();
+            var response = await _AdminUserServices.Get();
 
             // Найдены некоторые Users
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -46,7 +46,7 @@ namespace Controllers.AdminUserController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> GetUserById(int id)
+        public async Task<IActionResult> Get(int id)
         {
             // Id валидация (Плохой ввод)
             if (id < 1)
@@ -54,7 +54,7 @@ namespace Controllers.AdminUserController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _AdminUserServices.GetUser(id);
+            var response = await _AdminUserServices.Get(id);
 
             // User found
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -73,7 +73,7 @@ namespace Controllers.AdminUserController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> GetUserByEmail(string email)
+        public async Task<IActionResult> GetByEmail(string email)
         {
             // Email not Valid (Плохой ввод)
             if (!email.IsValidEmail())
@@ -81,7 +81,7 @@ namespace Controllers.AdminUserController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _AdminUserServices.GetUserByEmail(email);
+            var response = await _AdminUserServices.GetByEmail(email);
 
             // User найден
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -108,24 +108,24 @@ namespace Controllers.AdminUserController
                 return UnprocessableEntity();
             }
             // Проверить существование "new email"
-            var response = await _AdminUserServices.GetUserByEmail(userEntity.Email);
+            var response = await _AdminUserServices.GetByEmail(userEntity.Email);
             // Conflict: Этот email уже существует
             if (response.StatusCode == DataBase.StatusCodes.Ok)
             {
                 return Conflict();
             }
             // Создать User
-            await _AdminUserServices.CreateUser(userEntity);
+            await _AdminUserServices.Create(userEntity);
             // Вернуть response 201
             return CreatedAtAction(nameof(userEntity), new { message = "Successed" });
         }
 
-        // Edit метод
+        // Update метод
         [HttpPost]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> Edit(User userEntity, string oldEmail)
+        public async Task<IActionResult> Update(User userEntity, string oldEmail)
         {
             // User not Valid (Плохой ввод)
             if (!userEntity.IsValid() || !oldEmail.IsValidEmail())
@@ -135,15 +135,15 @@ namespace Controllers.AdminUserController
             }
 
             // Проверить oldEmail существует
-            var response = await _AdminUserServices.GetUserByEmail(oldEmail);
-            // NotFound: Edit user не найден
+            var response = await _AdminUserServices.GetByEmail(oldEmail);
+            // NotFound: Update user не найден
             if (response.StatusCode == DataBase.StatusCodes.NotFound)
             {
                 return NotFound();
             }
 
             // Изменить User
-            await _AdminUserServices.Edit(oldEmail, userEntity);
+            await _AdminUserServices.Update(oldEmail, userEntity);
             // Вернуть response 201
             return CreatedAtAction(nameof(userEntity), new { message = "Successed" });
         }
@@ -153,7 +153,7 @@ namespace Controllers.AdminUserController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             // Id validation (Плохой ввод)
             if (id < 1)
@@ -161,7 +161,7 @@ namespace Controllers.AdminUserController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _AdminUserServices.DeleteUser(id);
+            var response = await _AdminUserServices.Delete(id);
 
             // User удален
             if (response.StatusCode == DataBase.StatusCodes.NoContent)

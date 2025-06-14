@@ -4,7 +4,7 @@ namespace Services;
 // Интерфейс IRespondedPeopleServices
 public interface IRespondedPeopleServices
 {
-    Task<IBaseResponse> EditRespondedPeople(List<RespondedPeople> respondedPeople);
+    Task<IBaseResponse> Update(List<RespondedPeople> respondedPeople);
 
-    Task<IBaseResponse> DeleteRespondedPeople(int requestId);
+    Task<IBaseResponse> Delete(int requestId);
 }

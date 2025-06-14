@@ -145,7 +145,7 @@ public class UserServices : IUserServices
     }
 
     // Поменять Name, Group, TelegramUrl
-    public async Task<IBaseResponse> EditMyProfile(User editedUser)
+    public async Task<IBaseResponse> UpdateMyProfile(User UpdateedUser)
     {
         BaseResponse response;
 
@@ -159,9 +159,9 @@ public class UserServices : IUserServices
             return response;
         }
 
-        user.Name = editedUser.Name;
-        user.Group = editedUser.Group;
-        user.TelegramUrl = editedUser.TelegramUrl;
+        user.Name = UpdateedUser.Name;
+        user.Group = UpdateedUser.Group;
+        user.TelegramUrl = UpdateedUser.TelegramUrl;
 
         await _UserRepository.Update(user);
 

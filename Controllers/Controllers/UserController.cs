@@ -72,9 +72,9 @@ namespace Controllers.UserController
         [HttpPut]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> EditMyProfile(User editedUser)
+        public async Task<IActionResult> UpdateMyProfile(User UpdateedUser)
         {
-            var response = await _UserServices.EditMyProfile(editedUser);
+            var response = await _UserServices.UpdateMyProfile(UpdateedUser);
 
             if (response.StatusCode == DataBase.StatusCodes.NotFound)
             {
