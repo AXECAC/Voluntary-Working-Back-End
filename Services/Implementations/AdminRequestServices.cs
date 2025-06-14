@@ -577,7 +577,7 @@ public class AdminRequestServices : IAdminRequestServices
         await _RequestRepository.Update(request);
 
 
-        RequestLog log = new RequestLog(0, request.AdminId, request.Id, $"Request Updateed: Adress to {request.Address}; Date to {request.Date}; DeadLine to {request.DeadLine}; PointNumber to {request.PointNumber}; NeededPeopleNumber to {request.NeededPeopleNumber}; Description to {request.Description}");
+        RequestLog log = new RequestLog(0, request.AdminId, request.Id, $"Request updated: Adress to {request.Address}; Date to {request.Date}; DeadLine to {request.DeadLine}; PointNumber to {request.PointNumber}; NeededPeopleNumber to {request.NeededPeopleNumber}; Description to {request.Description}");
 
         _RequestLogServices.AppendLogToFile(log);
         // NoContent (201)
