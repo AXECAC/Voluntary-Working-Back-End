@@ -14,7 +14,7 @@ public class RespondedPeopleServices : IRespondedPeopleServices
         _RespondedPeopleRepository = respondedPeopleRepository;
     }
 
-    public async Task<IBaseResponse> EditRespondedPeople(List<RespondedPeople> respondedPeople)
+    public async Task<IBaseResponse> Update(List<RespondedPeople> respondedPeople)
     {
         BaseResponse response;
 
@@ -39,7 +39,7 @@ public class RespondedPeopleServices : IRespondedPeopleServices
         return response;
     }
 
-    public async Task<IBaseResponse> DeleteRespondedPeople(int requestId)
+    public async Task<IBaseResponse> Delete(int requestId)
     {
         BaseResponse response;
 

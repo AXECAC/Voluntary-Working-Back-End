@@ -33,7 +33,7 @@ namespace Controllers.AdminRequestController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         public async Task<IActionResult> AdminFeed()
         {
-            var response = await _AdminRequestServices.GetRequests();
+            var response = await _AdminRequestServices.Get();
 
             // Нет requests
             if (response.StatusCode == DataBase.StatusCodes.NoContent)
@@ -49,7 +49,7 @@ namespace Controllers.AdminRequestController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> GetRequest(int id)
+        public async Task<IActionResult> Get(int id)
         {
             // Id валидация (Плохой ввод)
             if (id < 1)
@@ -57,7 +57,7 @@ namespace Controllers.AdminRequestController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _AdminRequestServices.GetRequest(id);
+            var response = await _AdminRequestServices.Get(id);
 
             // Есть request
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -74,9 +74,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsByAdminId(int id)
+        public async Task<IActionResult> GetByAdminId(int id)
         {
-            var response = await _AdminRequestServices.GetRequestsByAdminId(id);
+            var response = await _AdminRequestServices.GetByAdminId(id);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -93,9 +93,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsByPointNumber(int pointNumber)
+        public async Task<IActionResult> GetByPointNumber(int pointNumber)
         {
-            var response = await _AdminRequestServices.GetRequestsByPointNumber(pointNumber);
+            var response = await _AdminRequestServices.GetByPointNumber(pointNumber);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -112,9 +112,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsByNeededPeopleNumber(int neededPeopleNumber)
+        public async Task<IActionResult> GetByNeededPeopleNumber(int neededPeopleNumber)
         {
-            var response = await _AdminRequestServices.GetRequestsByNeededPeopleNumber(neededPeopleNumber);
+            var response = await _AdminRequestServices.GetByNeededPeopleNumber(neededPeopleNumber);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -131,9 +131,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsByAddress(string address)
+        public async Task<IActionResult> GetByAddress(string address)
         {
-            var response = await _AdminRequestServices.GetRequestsByAddress(address);
+            var response = await _AdminRequestServices.GetByAddress(address);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -150,9 +150,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsDTBegin(DateTime dateOfBegin)
+        public async Task<IActionResult> GetDTBegin(DateTime dateOfBegin)
         {
-            var response = await _AdminRequestServices.GetRequestsDTBegin(dateOfBegin);
+            var response = await _AdminRequestServices.GetDTBegin(dateOfBegin);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -169,9 +169,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsDT(DateTime dateOfBegin)
+        public async Task<IActionResult> GetDT(DateTime dateOfBegin)
         {
-            var response = await _AdminRequestServices.GetRequestsDT(dateOfBegin);
+            var response = await _AdminRequestServices.GetDT(dateOfBegin);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -188,9 +188,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsDTDeadLine(DateTime dateOfDeadLine)
+        public async Task<IActionResult> GetDTDeadLine(DateTime dateOfDeadLine)
         {
-            var response = await _AdminRequestServices.GetRequestsDTDeadLine(dateOfDeadLine);
+            var response = await _AdminRequestServices.GetDTDeadLine(dateOfDeadLine);
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -207,9 +207,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsCompleted()
+        public async Task<IActionResult> GetCompleted()
         {
-            var response = await _AdminRequestServices.GetRequestsCompleted();
+            var response = await _AdminRequestServices.GetCompleted();
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -226,9 +226,9 @@ namespace Controllers.AdminRequestController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRequestsFailed()
+        public async Task<IActionResult> GetFailed()
         {
-            var response = await _AdminRequestServices.GetRequestsFailed();
+            var response = await _AdminRequestServices.GetFailed();
 
             // Есть requests
             if (response.StatusCode == DataBase.StatusCodes.Ok)
@@ -245,7 +245,7 @@ namespace Controllers.AdminRequestController
         [HttpPost]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> CreateRequest(PrivateRequest request)
+        public async Task<IActionResult> Create(PrivateRequest request)
         {
             Request crRequest = request.ToRequest();
             // Проверка request на валидность
@@ -258,7 +258,7 @@ namespace Controllers.AdminRequestController
             crRequest.AdminId = _UserServices.GetMyId();
 
             // Создаем Request
-            await _AdminRequestServices.CreateRequest(crRequest);
+            await _AdminRequestServices.Create(crRequest);
 
             // Return response 200
             return CreatedAtAction(nameof(crRequest), "Successed");
@@ -268,12 +268,12 @@ namespace Controllers.AdminRequestController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> EditRequest(PrivateRequest request)
+        public async Task<IActionResult> Update(PrivateRequest request)
         {
             Request crRequest = request.ToRequest();
             // Проверка request на валидность
             if (!crRequest.IsValid() || !(crRequest.NeededPeopleNumber >= request.RespondedPeople.Count)
-                    || (request.RespondedPeople.Exists(x => x < 1)))
+                    || request.RespondedPeople.Exists(x => x < 1))
             {
                 return UnprocessableEntity();
             }
@@ -293,7 +293,7 @@ namespace Controllers.AdminRequestController
             crRequest.AdminId = _UserServices.GetMyId();
 
             // Меняем Request
-            response = await _AdminRequestServices.EditRequest(crRequest);
+            response = await _AdminRequestServices.Update(crRequest);
 
             // Получилось изменить
             if (response.StatusCode == DataBase.StatusCodes.Created)
@@ -304,7 +304,7 @@ namespace Controllers.AdminRequestController
                     List<RespondedPeople> respondedPeoples = new List<RespondedPeople>();
                     respondedPeoples.Generate(request.RespondedPeople, request.Id);
 
-                    response = await _RespondedPeopleServices.EditRespondedPeople(respondedPeoples);
+                    response = await _RespondedPeopleServices.Update(respondedPeoples);
                 }
 
                 // Вернуть response 200
@@ -320,7 +320,7 @@ namespace Controllers.AdminRequestController
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> DeleteRequest(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             // Id валидация (Плохой ввод)
             if (id < 1)
@@ -328,12 +328,12 @@ namespace Controllers.AdminRequestController
                 // Вернуть StatusCode 422
                 return UnprocessableEntity();
             }
-            var response = await _AdminRequestServices.DeleteRequest(id);
+            var response = await _AdminRequestServices.Delete(id);
 
             // Есть request
             if (response.StatusCode == DataBase.StatusCodes.NoContent)
             {
-                await _RespondedPeopleServices.DeleteRespondedPeople(id);
+                await _RespondedPeopleServices.Delete(id);
                 // Вернуть response 204
                 return NoContent();
             }
