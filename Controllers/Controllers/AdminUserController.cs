@@ -26,7 +26,7 @@ namespace Controllers.AdminUserController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> Get()
         {
             var response = await _AdminUserServices.Get();
 
