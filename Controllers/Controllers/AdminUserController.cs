@@ -42,7 +42,7 @@ namespace Controllers.AdminUserController
         }
 
         // GetUserById метод
-        [HttpGet]
+        [HttpGet("{id}")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
@@ -69,11 +69,11 @@ namespace Controllers.AdminUserController
         }
 
         // GetUserByEmail метод
-        [HttpGet]
+        [HttpGet("email/{email}")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
-        public async Task<IActionResult> GetByEmail(string email)
+        public async Task<IActionResult> Get(string email)
         {
             // Email not Valid (Плохой ввод)
             if (!email.IsValidEmail())
