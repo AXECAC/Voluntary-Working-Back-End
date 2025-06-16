@@ -25,7 +25,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequests()
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> Get()
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -66,7 +66,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить Request по id
-    public async Task<IBaseResponse<PrivateRequest>> GetRequest(int id)
+    public async Task<IBaseResponse<PrivateRequest>> Get(int id)
     {
         BaseResponse<PrivateRequest> response;
 
@@ -102,7 +102,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить Requests по NeededPeopleNumber
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByNeededPeopleNumber(int neededPeopleNumber)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetByNeededPeopleNumber(int neededPeopleNumber)
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -144,7 +144,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить Requests по PointNumber
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByPointNumber(int pointNumber)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetByPointNumber(int pointNumber)
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -187,7 +187,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests созданные и закрытые админом по его Id
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByAdminId(int adminId)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetByAdminId(int adminId)
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -229,7 +229,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests по адресу
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsByAddress(string address)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetByAddress(string address)
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -271,7 +271,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests по DateTime начала
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTBegin(DateTime dateOfBegin)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetDTBegin(DateTime dateOfBegin)
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -313,7 +313,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests доступные на момент date
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDT(DateTime date)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetDT(DateTime date)
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -355,7 +355,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests по DateTime дедлайна
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsDTDeadLine(DateTime dateOfDeadLine)
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetDTDeadLine(DateTime dateOfDeadLine)
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -397,7 +397,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests по IsCompleted == true
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsCompleted()
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetCompleted()
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -440,7 +440,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Получить все Requests по IsFailed == true
-    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetRequestsFailed()
+    public async Task<IBaseResponse<IEnumerable<PrivateRequest>>> GetFailed()
     {
         BaseResponse<IEnumerable<PrivateRequest>> response;
 
@@ -482,7 +482,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Создать Request
-    public async Task<IBaseResponse> CreateRequest(Request request)
+    public async Task<IBaseResponse> Create(Request request)
     {
         // Обнуляем значения
         request.Id = 0;
@@ -509,7 +509,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Удалить Request по id
-    public async Task<IBaseResponse> DeleteRequest(int id)
+    public async Task<IBaseResponse> Delete(int id)
     {
         BaseResponse response;
         // Ищем в кэше
@@ -542,7 +542,7 @@ public class AdminRequestServices : IAdminRequestServices
     }
 
     // Изменить Request
-    public async Task<IBaseResponse> EditRequest(Request newRequest)
+    public async Task<IBaseResponse> Update(Request newRequest)
     {
         BaseResponse response;
         // Ищем в кэше
@@ -577,11 +577,11 @@ public class AdminRequestServices : IAdminRequestServices
         await _RequestRepository.Update(request);
 
 
-        RequestLog log = new RequestLog(0, request.AdminId, request.Id, $"Request Edited: Adress to {request.Address}; Date to {request.Date}; DeadLine to {request.DeadLine}; PointNumber to {request.PointNumber}; NeededPeopleNumber to {request.NeededPeopleNumber}; Description to {request.Description}");
+        RequestLog log = new RequestLog(0, request.AdminId, request.Id, $"Request updated: Adress to {request.Address}; Date to {request.Date}; DeadLine to {request.DeadLine}; PointNumber to {request.PointNumber}; NeededPeopleNumber to {request.NeededPeopleNumber}; Description to {request.Description}");
 
         _RequestLogServices.AppendLogToFile(log);
         // NoContent (201)
-        response = BaseResponse.Created("Request edit");
+        response = BaseResponse.Created("Request Update");
         return response;
     }
 

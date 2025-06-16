@@ -4,15 +4,15 @@ namespace Services;
 // Интерфейс IAdminUserServices
 public interface IAdminUserServices
 {
-    Task<IBaseResponse<IEnumerable<User>>> GetUsers();
+    Task<IBaseResponse<IEnumerable<User>>> Get();
 
-    Task<IBaseResponse<User>> GetUser(int id);
+    Task<IBaseResponse<User>> Get(int id);
 
-    Task<IBaseResponse> CreateUser(User userEntity);
+    Task<IBaseResponse> Create(User userEntity);
 
-    Task<IBaseResponse> DeleteUser(int id);
+    Task<IBaseResponse> Delete(int id);
 
-    Task<IBaseResponse<User>> GetUserByEmail(string email);
+    Task<IBaseResponse<User>> GetByEmail(string email);
 
-    Task<IBaseResponse> Edit(string oldEmail, User userEntity);
+    Task<IBaseResponse> Update(string oldEmail, User userEntity);
 }
