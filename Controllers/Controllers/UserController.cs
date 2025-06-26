@@ -22,7 +22,7 @@ namespace Controllers.UserController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetMyProfile()
+        public async Task<IActionResult> MyProfile()
         {
             var response = await _UserServices.GetMyProfile();
 
@@ -39,7 +39,7 @@ namespace Controllers.UserController
         [HttpGet]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetMyCurrentRequests()
+        public async Task<IActionResult> MyCurrentRequests()
         {
             var response = await _UserServices.GetMyCurrentRequests();
 
@@ -72,7 +72,7 @@ namespace Controllers.UserController
         [HttpPut]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateMyProfile(User updatedUser)
+        public async Task<IActionResult> MyProfile(User updatedUser)
         {
             var response = await _UserServices.UpdateMyProfile(updatedUser);
 
