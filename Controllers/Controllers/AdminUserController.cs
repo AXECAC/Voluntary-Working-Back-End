@@ -6,7 +6,7 @@ using Extentions;
 
 namespace Controllers.AdminUserController
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [Authorize(Roles = "Dev, Admin")]
     [ApiController]
     [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized)]
@@ -69,7 +69,7 @@ namespace Controllers.AdminUserController
         }
 
         // GetUserByEmail метод
-        [HttpGet("email/{email}")]
+        [HttpGet("ByEmail/{email}")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
@@ -121,7 +121,7 @@ namespace Controllers.AdminUserController
         }
 
         // Update метод
-        [HttpPost]
+        [HttpPut("{oldEmail}")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status201Created)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
@@ -149,7 +149,7 @@ namespace Controllers.AdminUserController
         }
 
         // Delete метод
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
