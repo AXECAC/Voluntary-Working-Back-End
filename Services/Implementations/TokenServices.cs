@@ -11,7 +11,7 @@ public class TokenServices : ITokenServices
 {
     private readonly IRefreshTokenRepository _RefreshTokenRepository;
     private readonly int accessTokenTime = 5;
-    private readonly int refreshTokenTime = 5;
+    private readonly int refreshTokenTime = 1440;
 
     public TokenServices(IRefreshTokenRepository refreshTokenRepository)
     {

@@ -603,6 +603,7 @@ public class AdminRequestServices : IAdminRequestServices
             }
 
             user.Points += points;
+            user.FinishedRequests += 1;
         }
 
         for (int i = 0; i < users.Count; i++)
