@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Context;
 using DataBase;
-using Services.Caching;
 namespace Services;
 
 // Класс StudentRequestServices
@@ -9,15 +8,13 @@ public class StudentRequestServices : IStudentRequestServices
 {
     private readonly IRequestRepository _RequestRepository;
     private readonly IRespondedPeopleRepository _RespondedPeopleRepository;
-    private readonly ICachingServices<PublicRequest> _CachingServices;
     private readonly IUserServices _UserServices;
 
-    public StudentRequestServices(IRequestRepository requestRepository, ICachingServices<PublicRequest> cachingServices,
-            IUserServices userServices, IRespondedPeopleRepository respondedPeopleRepository)
+    public StudentRequestServices(IRequestRepository requestRepository, IUserServices userServices,
+            IRespondedPeopleRepository respondedPeopleRepository)
     {
         _RequestRepository = requestRepository;
         _RespondedPeopleRepository = respondedPeopleRepository;
-        _CachingServices = cachingServices;
         _UserServices = userServices;
     }
 
@@ -70,11 +67,6 @@ public class StudentRequestServices : IStudentRequestServices
         // Ищем запрос в БД
         var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
 
-        // Ищем откликнувшихся на запрос
-        var respondedPeople = await _RespondedPeopleRepository
-            .Where(rp => rp.RequestId == requestId)
-            .ToListAsync();
-
         // Если запроса нет
         if (request == null)
         {
@@ -84,13 +76,20 @@ public class StudentRequestServices : IStudentRequestServices
         }
 
         // Нашли запрос
+
+        // Ищем откликнувшихся на запрос
+        var respondedPeople = await _RespondedPeopleRepository
+            .Where(rp => rp.RequestId == requestId)
+            .ToListAsync();
+
+        // Если остались места
         if (respondedPeople.Count < request.NeededPeopleNumber)
         {
-            // Получаем Id откликнувшегося студента
+            // Получаем Id откликнувшегося студента из токена
             int myId = _UserServices.GetMyId();
 
             // Если студент уже откликался
-            if (respondedPeople.Where(rp => rp.UserId == myId).Count() > 0)
+            if (respondedPeople.Where(rp => rp.UserId == myId).Any())
             {
                 // BadRequest (400)
                 response = BaseResponse.BadRequest("Already added");
@@ -103,7 +102,7 @@ public class StudentRequestServices : IStudentRequestServices
             newRP.RequestId = requestId;
             newRP.UserId = myId;
 
-            // Добавляем студента к RespondedPeople
+            // Добавляем студента к откликнувшимся
             await _RespondedPeopleRepository.Create(newRP);
             // NoContent (204)
             response = BaseResponse.NoContent("Successed");
@@ -122,11 +121,6 @@ public class StudentRequestServices : IStudentRequestServices
         // Ищем запрос в БД
         var request = await _RequestRepository.FirstOrDefaultAsync(rq => rq.Id == requestId);
 
-        // Ищем откликнувшихся на запрос
-        var respondedPeople = await _RespondedPeopleRepository
-            .Where(rp => rp.RequestId == requestId)
-            .ToListAsync();
-
         // Если запроса нет
         if (request == null)
         {
@@ -135,13 +129,19 @@ public class StudentRequestServices : IStudentRequestServices
             return response;
         }
 
+        // Ищем откликнувшихся на запрос
+        var respondedPeople = await _RespondedPeopleRepository
+            .Where(rp => rp.RequestId == requestId)
+            .ToListAsync();
+
+
         // Нашли запрос
         // Получаем Id откликнувшегося студента
         int myId = _UserServices.GetMyId();
 
         // Ищем отклик студента
         RespondedPeople deleteRP = respondedPeople
-            .FirstOrDefault(rp => (rp.UserId == myId && rp.RequestId == request.Id));
+            .FirstOrDefault(rp => rp.UserId == myId && rp.RequestId == request.Id);
 
         // Если студент уже откликался
         if (deleteRP != null)
