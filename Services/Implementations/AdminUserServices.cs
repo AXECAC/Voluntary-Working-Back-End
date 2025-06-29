@@ -54,7 +54,7 @@ public class AdminUserServices : IAdminUserServices
             baseResponse = BaseResponse<User>.NotFound("User not found");
             return baseResponse;
         }
-        // Found - Ok (200)
+        // Ok (200)
         // Добавляем User в кэш
         _CachingServices.SetAsync(user, user.Id.ToString());
         baseResponse = BaseResponse<User>.Ok(user, "User found");
@@ -92,6 +92,11 @@ public class AdminUserServices : IAdminUserServices
         // Ищем User в БД
         user = await _UserRepository.FirstOrDefaultAsync(x => x.Id == id);
 
+        if (user.Role == "Dev")
+        {
+            baseResponse = BaseResponse.BadRequest("Permision denied");
+            return baseResponse;
+        }
         // Ищем User в кэше по Email
         if (user != null)
         {
