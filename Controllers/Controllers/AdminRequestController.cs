@@ -6,7 +6,7 @@ using Extentions;
 
 namespace Controllers.AdminRequestController
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [Authorize(Roles = "Dev, Admin")]
     [ApiController]
     [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status401Unauthorized)]
@@ -28,7 +28,7 @@ namespace Controllers.AdminRequestController
         }
 
         // AdminFeed --- лента админов
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         public async Task<IActionResult> AdminFeed()
@@ -45,7 +45,7 @@ namespace Controllers.AdminRequestController
             return Ok(response.Data);
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
@@ -71,7 +71,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByAdminId(int id)
@@ -90,7 +90,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByPointNumber(int pointNumber)
@@ -109,7 +109,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByNeededPeopleNumber(int neededPeopleNumber)
@@ -128,7 +128,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByAddress(string address)
@@ -147,7 +147,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetDTBegin(DateTime dateOfBegin)
@@ -166,7 +166,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetDT(DateTime dateOfBegin)
@@ -185,7 +185,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetDTDeadLine(DateTime dateOfDeadLine)
@@ -204,7 +204,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCompleted()
@@ -223,7 +223,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetFailed()
@@ -316,7 +316,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status200OK)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status422UnprocessableEntity)]
@@ -343,7 +343,7 @@ namespace Controllers.AdminRequestController
             return NotFound();
         }
 
-        [HttpPut]
+        [HttpPut("[action]")]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status204NoContent)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest)]
         [ProducesResponseType(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound)]
